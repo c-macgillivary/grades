@@ -11,6 +11,7 @@ void ClassManager::addClass(std::string name)
 
 int ClassManager::save()
 {
+  std::filesystem::create_directories(Config::DATA_DIR);
   std::ofstream file(Config::DATA_DIR / "classes.json");
   nlohmann::json data = _classes;
 
