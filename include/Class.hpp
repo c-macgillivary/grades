@@ -2,6 +2,7 @@
 #define CLASS_H
 
 #include <vector>
+
 #include "Assessment.hpp"
 
 class Class
@@ -9,8 +10,12 @@ class Class
 private:
   std::vector<Assessment> _assessments;
   std::string _code;
+
 public:
   explicit Class(std::string code);
+
+  friend void to_json(nlohmann::json& j, const Class& c);
+  friend void from_json(const nlohmann::json& j, Class& c);
 };
 
 #endif // !CLASS_H

@@ -17,5 +17,7 @@ int main(int argc, char** argv)
 
   CLI11_PARSE(app, argc, argv);
 
+  manager.save();
+
   return 0;
 }

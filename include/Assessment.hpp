@@ -1,6 +1,7 @@
 #ifndef ASSESSMENT_H
 #define ASSESSMENT_H
 
+#include <nlohmann/json.hpp>
 #include <string>
 
 class Assessment
@@ -8,9 +9,13 @@ class Assessment
 private:
   std::string _name;
   double _weight;
-  double _grade = -1;
+  double _grade;
+
 public:
-  Assessment(std::string name, double weight);
+  explicit Assessment(std::string name = "", double weight = 0.0, double grade = -1);
+
+  friend void to_json(nlohmann::json& j, const Assessment& a);
+  friend void from_json(const nlohmann::json& j, Assessment& a);
 };
 
 #endif // !ASSESSMENT_H

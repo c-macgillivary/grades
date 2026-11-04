@@ -1,10 +1,8 @@
-#include <filesystem>
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 #include "ClassManager.hpp"
 #include "Config.hpp"
-
-using nlohmann::json;
 
 void ClassManager::addClass(std::string name)
 {
@@ -13,7 +11,14 @@ void ClassManager::addClass(std::string name)
 
 int ClassManager::save()
 {
-  std::filesystem::path write = Config::DATA_DIR;
+  std::ofstream file(Config::DATA_DIR / "classes.json");
+  nlohmann::json data = _classes;
+
+  if (!file.is_open())
+    // TODO add error handling
+    return -1;
+
+  file << data.dump(4);
 
   return 0;
 }
