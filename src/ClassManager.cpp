@@ -11,7 +11,7 @@ ClassManager::ClassManager()
 
 void ClassManager::addClass(std::string name)
 {
-  _classes.emplace_back(name);
+  _classes[name] = Class(name);
 }
 
 int ClassManager::save()
@@ -39,6 +39,6 @@ int ClassManager::load()
   nlohmann::json data;
   file >> data;
 
-  _classes = data.get<std::vector<Class>>();
+  data.get_to(_classes);
   return 0;
 }

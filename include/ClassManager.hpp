@@ -1,14 +1,14 @@
 #ifndef CLASS_MANAGER_HPP
 #define CLASS_MANAGER_HPP
 
-#include <vector>
+#include <string>
 
 #include "Class.hpp"
 
 class ClassManager
 {
 private:
-  std::vector<Class> _classes;
+  std::unordered_map<std::string, Class> _classes;
 public:
   ClassManager();
 
