@@ -9,9 +9,9 @@ ClassManager::ClassManager()
   load();
 }
 
-void ClassManager::addClass(std::string name)
+void ClassManager::addClass(std::string code)
 {
-  _classes[name] = Class(name);
+  _classes[code] = Class(code);
 }
 
 int ClassManager::save()

@@ -10,10 +10,10 @@ int main(int argc, char** argv)
 
   auto class_cmd = app.add_subcommand("class", "Manage classes");
   auto class_add = class_cmd->add_subcommand("add", "Add classes");
-  std::string className = "";
-  class_add->add_option("name", className, "Name of the class to be added")->required();
+  std::string code = "";
+  class_add->add_option("name", code, "Name of the class to be added")->required();
   class_add->callback([&]()
-                      { manager.addClass(className); });
+                      { manager.addClass(code); });
 
   CLI11_PARSE(app, argc, argv);
 

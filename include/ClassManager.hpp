@@ -12,7 +12,7 @@ private:
 public:
   ClassManager();
 
-  void addClass(std::string name);
+  void addClass(std::string code);
 
   int save();
   
