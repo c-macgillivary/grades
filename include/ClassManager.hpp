@@ -9,13 +9,15 @@ class ClassManager
 {
 private:
   std::unordered_map<std::string, Class> _classes;
+
 public:
   ClassManager();
 
   void addClass(std::string code);
+  int removeClass(std::string code);
 
   int save();
-  
+
   int load();
 };
 

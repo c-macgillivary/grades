@@ -14,6 +14,14 @@ void ClassManager::addClass(std::string code)
   _classes[code] = Class(code);
 }
 
+int ClassManager::removeClass(std::string code)
+{
+  if (_classes.erase(code))
+    return 0;
+  // TODO add error handling
+  return -1;
+}
+
 int ClassManager::save()
 {
   std::filesystem::create_directories(Config::DATA_DIR);
