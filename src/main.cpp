@@ -12,7 +12,7 @@ int main(int argc, char** argv)
   auto class_add = class_cmd->add_subcommand("add", "Add classes");
   auto class_remove = class_cmd->add_subcommand("remove", "Add classes");
   std::string code = "";
-  class_add->add_option("name", code, "Name of the class to be added")->required();
+  class_add->add_option("<course_code>", code, "Code of the class to be added")->required();
   class_add->callback([&]()
                       { manager.addClass(code); });
 
