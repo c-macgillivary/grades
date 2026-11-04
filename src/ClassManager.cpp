@@ -4,6 +4,11 @@
 #include "ClassManager.hpp"
 #include "Config.hpp"
 
+ClassManager::ClassManager()
+{
+  load();
+}
+
 void ClassManager::addClass(std::string name)
 {
   _classes.emplace_back(name);
@@ -21,5 +26,19 @@ int ClassManager::save()
 
   file << data.dump(4);
 
+  return 0;
+}
+
+int ClassManager::load()
+{
+  std::ifstream file(Config::DATA_DIR / "classes.json");
+
+  if (!file.is_open())
+    return -1; // No saved data yet
+
+  nlohmann::json data;
+  file >> data;
+
+  _classes = data.get<std::vector<Class>>();
   return 0;
 }
