@@ -24,10 +24,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(json)
 
 add_executable(grades
-  src/main.cpp
-  src/Class.cpp
-  src/ClassManager.cpp
-  src/Assessment.cpp
+  src/core/main.cpp
+  src/core/Class.cpp
+  src/core/ClassManager.cpp
+  src/core/Assessment.cpp
 )
 
 target_include_directories(grades

@@ -1,4 +1,4 @@
-#include "Assessment.hpp"
+#include "core/Assessment.hpp"
 
 Assessment::Assessment(std::string name, double weight, double grade) :
   _name(name),

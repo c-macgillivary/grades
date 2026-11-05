@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "Assessment.hpp"
+#include "core/Assessment.hpp"
 
 class Class
 {

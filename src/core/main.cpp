@@ -1,7 +1,7 @@
 #include <CLI/App.hpp>
 #include <iostream>
 
-#include "ClassManager.hpp"
+#include "core/ClassManager.hpp"
 
 int main(int argc, char** argv)
 {

@@ -1,4 +1,4 @@
-#include "Class.hpp"
+#include "core/Class.hpp"
 
 Class::Class(std::string code) :
   _code(code)

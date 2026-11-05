@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "Class.hpp"
+#include "core/Class.hpp"
 
 class ClassManager
 {

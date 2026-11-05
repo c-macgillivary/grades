@@ -1,8 +1,8 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "ClassManager.hpp"
-#include "Config.hpp"
+#include "core/ClassManager.hpp"
+#include "core/Config.hpp"
 
 ClassManager::ClassManager()
 {
