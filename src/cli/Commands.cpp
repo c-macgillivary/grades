@@ -6,6 +6,7 @@ void registerClassCommands(CLI::App& app, Manager& manager)
 {
   auto class_cmd = app.add_subcommand("class", "Manage classes");
   class_cmd->alias("c");
+  class_cmd->require_subcommand(1);
 
   auto class_add = class_cmd->add_subcommand("add", "Add classes");
   class_add->alias("a");
@@ -37,6 +38,7 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
 {
   auto assessments_cmd = app.add_subcommand("assessments", "Manage assessments");
   assessments_cmd->alias("a");
+  assessments_cmd->require_subcommand(1);
 
   auto assessments_add = assessments_cmd->add_subcommand("add", "Add assessments");
   assessments_add->alias("a");
