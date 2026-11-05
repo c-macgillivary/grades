@@ -24,6 +24,6 @@ void to_json(nlohmann::json& j, const Class& c)
 
 void from_json(const nlohmann::json& j, Class& c)
 {
-    j.at("code").get_to(c._code);
-    j.at("assessments").get_to(c._assessments);
+  j.at("code").get_to(c._code);
+  j.at("assessments").get_to(c._assessments);
 }
