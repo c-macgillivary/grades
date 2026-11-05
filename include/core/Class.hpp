@@ -8,7 +8,7 @@
 class Class
 {
 private:
-  std::vector<Assessment> _assessments;
+  std::unordered_map<std::string, Assessment> _assessments;
   std::string _code;
 
 public:
