@@ -16,6 +16,11 @@ public:
 
   friend void to_json(nlohmann::json& j, const Class& c);
   friend void from_json(const nlohmann::json& j, Class& c);
+
+  const std::string& getCode() const
+  {
+    return _code;
+  }
 };
 
 #endif // !CLASS_H
