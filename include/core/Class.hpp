@@ -1,8 +1,6 @@
 #ifndef CLASS_H
 #define CLASS_H
 
-#include <vector>
-
 #include "core/Assessment.hpp"
 
 class Class
