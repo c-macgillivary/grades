@@ -36,25 +36,32 @@ void registerClassCommands(CLI::App& app, Manager& manager)
 
 void registerAssessmentCommands(CLI::App& app, Manager& manager)
 {
+  // assessment subcommand
   auto assessments_cmd = app.add_subcommand("assessments", "Manage assessments");
   assessments_cmd->alias("a");
   assessments_cmd->require_subcommand(1);
 
+  // assessment add subcommand
   auto assessments_add = assessments_cmd->add_subcommand("add", "Add assessments");
-  assessments_add->alias("a");
-
   static std::string code = "";
   static std::string name = "";
   static double weight = 0.0;
   static double grade = -1.0;
 
+  assessments_add->alias("a");
   assessments_add->add_option("<course_code>", code, "Code of the course with the assessment")->required();
   assessments_add->add_option("<assessment_name>", name, "Name of the assessment to be added")->required();
   assessments_add->add_option("<weight>", weight, "Weight of the assessment towards the final grade")->required();
   assessments_add->add_option("[grade]", grade, "Grade achieved");
-
   assessments_add->callback([&]()
                       { manager.addAssessment(code, name, weight, grade); });
+
+  // assessment remove subcommand
+  assessments_add->alias("r");
+  assessments_add->add_option("<course_code>", code, "Code of the course with the assessment")->required();
+  assessments_add->add_option("<assessment_name>", name, "Name of the assessment to be removed")->required();
+  assessments_add->callback([&]()
+                      { manager.removeAssessment(code, name); });
 }
 
 void registerCommands(CLI::App& app, Manager& manager)
