@@ -57,10 +57,11 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
                       { manager.addAssessment(code, name, weight, grade); });
 
   // assessment remove subcommand
-  assessments_add->alias("r");
-  assessments_add->add_option("<course_code>", code, "Code of the course with the assessment")->required();
-  assessments_add->add_option("<assessment_name>", name, "Name of the assessment to be removed")->required();
-  assessments_add->callback([&]()
+  auto assessments_remove = assessments_cmd->add_subcommand("remove", "Remove assessments");
+  assessments_remove->alias("r");
+  assessments_remove->add_option("<course_code>", code, "Code of the course with the assessment")->required();
+  assessments_remove->add_option("<assessment_name>", name, "Name of the assessment to be removed")->required();
+  assessments_remove->callback([&]()
                       { manager.removeAssessment(code, name); });
 }
 
