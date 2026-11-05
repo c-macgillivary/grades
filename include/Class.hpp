@@ -21,6 +21,7 @@ public:
   {
     return _code;
   }
+
 };
 
 #endif // !CLASS_H
