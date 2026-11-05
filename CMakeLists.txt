@@ -30,6 +30,20 @@ add_library(core STATIC
   src/core/Assessment.cpp
 )
 
+# Set json as system include to suppress warnings
+get_target_property(JSON_TARGET
+    nlohmann_json::nlohmann_json
+    ALIASED_TARGET
+)
+get_target_property(JSON_INCLUDE_DIR
+    nlohmann_json::nlohmann_json
+    INTERFACE_INCLUDE_DIRECTORIES
+)
+set_property(TARGET ${JSON_TARGET}
+    APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+    "${JSON_INCLUDE_DIR}"
+)
+
 target_link_libraries(core PUBLIC nlohmann_json::nlohmann_json)
 
 target_include_directories(core PUBLIC include)
