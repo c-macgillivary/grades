@@ -4,29 +4,29 @@
 
 void registerClassCommands(CLI::App& app, Manager& manager)
 {
+  // class subcommand
   auto class_cmd = app.add_subcommand("class", "Manage classes");
   class_cmd->alias("c");
   class_cmd->require_subcommand(1);
 
+  // class add subcommand
   auto class_add = class_cmd->add_subcommand("add", "Add classes");
   class_add->alias("a");
-
-  auto class_remove = class_cmd->add_subcommand("remove", "Remove classes");
-  class_remove->alias("r");
-
-  auto class_list = class_cmd->add_subcommand("list", "List classes");
-  class_list->alias("l");
-
   static std::string code = "";
-
   class_add->add_option("<course_code>", code, "Code of the class to be added")->required();
   class_add->callback([&]()
-                      { manager.addClass(code); });
+      { manager.addClass(code); });
 
+  // class remove subcommand
+  auto class_remove = class_cmd->add_subcommand("remove", "Remove classes");
+  class_remove->alias("r");
   class_remove->add_option("<course_code>", code, "Code of the class to be removed")->required();
   class_remove->callback([&]()
-                         { manager.removeClass(code); });
+      { manager.removeClass(code); });
 
+  // class list subcommand
+  auto class_list = class_cmd->add_subcommand("list", "List classes");
+  class_list->alias("l");
   class_list->callback([&]()
                        {
                          auto classes = manager.getClasses();
