@@ -16,6 +16,8 @@ public:
   void addClass(std::string code);
   int removeClass(std::string code);
 
+  int addAssessment(std::string code, std::string name, double weight, double grade);
+
   const std::unordered_map<std::string, Class>& getClasses() const
   {
     return _classes;

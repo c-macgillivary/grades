@@ -25,7 +25,25 @@ void registerClassCommands(CLI::App& app, Manager& manager)
                            std::cout << code << std::endl; });
 }
 
+void registerAssessmentCommands(CLI::App& app, Manager& manager)
+{
+  auto assessments_cmd = app.add_subcommand("assessments", "Manage assessments");
+  auto assessments_ad = assessments_cmd->add_subcommand("add", "Add assessments");
+
+  static std::string code = "";
+  static std::string name = "";
+  static double weight = 0.0;
+  static double grade = -1.0;
+  assessments_ad->add_option("<course_code>", code, "Code of the course with the assessment")->required();
+  assessments_ad->add_option("<assessment_name>", name, "Name of the assessment to be added")->required();
+  assessments_ad->add_option("<weight>", weight, "Weight of the assessment towards the final grade")->required();
+  assessments_ad->add_option("[grade]", grade, "Grade achieved");
+  assessments_ad->callback([&]()
+                      { manager.addAssessment(code, name, weight, grade); });
+}
+
 void registerCommands(CLI::App& app, Manager& manager)
 {
   registerClassCommands(app, manager);
+  registerAssessmentCommands(app, manager);
 }

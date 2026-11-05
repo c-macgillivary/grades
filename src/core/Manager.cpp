@@ -1,8 +1,8 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "core/Manager.hpp"
 #include "core/Config.hpp"
+#include "core/Manager.hpp"
 
 Manager::Manager()
 {
@@ -20,6 +20,14 @@ int Manager::removeClass(std::string code)
     return 0;
   // TODO add error handling
   return -1;
+}
+
+int Manager::addAssessment(std::string code, std::string name, double weight, double grade)
+{
+  if (not _classes.contains(code))
+    return -1;
+
+  return _classes[code].addAssessment(name, weight, grade);
 }
 
 int Manager::save()
