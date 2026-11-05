@@ -10,7 +10,8 @@ int main(int argc, char** argv)
 
   auto class_cmd = app.add_subcommand("class", "Manage classes");
   auto class_add = class_cmd->add_subcommand("add", "Add classes");
-  auto class_remove = class_cmd->add_subcommand("remove", "Add classes");
+  auto class_remove = class_cmd->add_subcommand("remove", "Remove classes");
+
   std::string code = "";
   class_add->add_option("<course_code>", code, "Code of the class to be added")->required();
   class_add->callback([&]()
