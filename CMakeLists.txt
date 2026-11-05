@@ -28,6 +28,7 @@ add_executable(grades
   src/core/Class.cpp
   src/core/ClassManager.cpp
   src/core/Assessment.cpp
+  src/cli/ClassCommands.cpp
 )
 
 target_include_directories(grades
