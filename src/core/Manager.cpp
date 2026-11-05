@@ -9,12 +9,12 @@ Manager::Manager()
   load();
 }
 
-void Manager::addClass(std::string code)
+void Manager::addClass(const std::string& code)
 {
   _classes[code] = Class(code);
 }
 
-int Manager::removeClass(std::string code)
+int Manager::removeClass(const std::string& code)
 {
   if (_classes.erase(code))
     return 0;
@@ -22,7 +22,7 @@ int Manager::removeClass(std::string code)
   return -1;
 }
 
-int Manager::addAssessment(std::string code, std::string name, double weight, double grade)
+int Manager::addAssessment(const std::string& code, const std::string& name, double weight, double grade)
 {
   if (not _classes.contains(code))
     return -1;
@@ -30,7 +30,7 @@ int Manager::addAssessment(std::string code, std::string name, double weight, do
   return _classes[code].addAssessment(name, weight, grade);
 }
 
-int Manager::removeAssessment(std::string code, std::string name)
+int Manager::removeAssessment(const std::string& code, const std::string& name)
 {
   if (not _classes.contains(code))
     return -1;
