@@ -6,5 +6,6 @@ Planned features include:
 - Best of X assignments
 - What grade do I need to get X final grade?
 - Highest possible final grade 
+- AND much more (seriously I have an ideas file with 40+ lines)
 
 Saves to `$XDG_DATA_HOME/.local/share/grades/classes.json`. Uses `$HOME` if `$XDG_DATA_HOME` is not set.
