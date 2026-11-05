@@ -1,6 +1,6 @@
 #include <CLI/App.hpp>
 
-#include "cli/ClassCommands.hpp"
+#include "cli/Commands.hpp"
 #include "core/Manager.hpp"
 
 int main(int argc, char** argv)

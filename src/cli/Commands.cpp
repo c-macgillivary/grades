@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "cli/ClassCommands.hpp"
+#include "cli/Commands.hpp"
 
 void registerCommands(CLI::App& app, Manager& manager)
 {
