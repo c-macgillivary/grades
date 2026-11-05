@@ -1,22 +1,22 @@
-#ifndef CLASS_MANAGER_HPP
-#define CLASS_MANAGER_HPP
+#ifndef MANAGER_HPP
+#define MANAGER_HPP
 
 #include <string>
 
 #include "core/Class.hpp"
 
-class ClassManager
+class Manager
 {
 private:
   std::unordered_map<std::string, Class> _classes;
 
 public:
-  ClassManager();
+  Manager();
 
   void addClass(std::string code);
   int removeClass(std::string code);
 
-  const std::unordered_map<std::string, Class> getClasses() const
+  const std::unordered_map<std::string, Class>& getClasses() const
   {
     return _classes;
   }
@@ -26,4 +26,4 @@ public:
   int load();
 };
 
-#endif // !CLASS_MANAGER_HPP
+#endif // !MANAGER_HPP

@@ -2,12 +2,12 @@
 #include <iostream>
 
 #include "cli/ClassCommands.hpp"
-#include "core/ClassManager.hpp"
+#include "core/Manager.hpp"
 
 int main(int argc, char** argv)
 {
   CLI::App app{ "A tracker for grades" };
-  ClassManager manager;
+  Manager manager;
   argv = app.ensure_utf8(argv);
 
   registerCommands(app, manager);

@@ -2,7 +2,7 @@
 
 #include "cli/ClassCommands.hpp"
 
-void registerCommands(CLI::App& app, ClassManager& manager)
+void registerCommands(CLI::App& app, Manager& manager)
 {
   auto class_cmd = app.add_subcommand("class", "Manage classes");
   auto class_add = class_cmd->add_subcommand("add", "Add classes");

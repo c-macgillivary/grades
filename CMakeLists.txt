@@ -26,7 +26,7 @@ FetchContent_MakeAvailable(json)
 
 add_library(core STATIC
   src/core/Class.cpp
-  src/core/ClassManager.cpp
+  src/core/Manager.cpp
   src/core/Assessment.cpp
 )
 

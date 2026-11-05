@@ -1,20 +1,20 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "core/ClassManager.hpp"
+#include "core/Manager.hpp"
 #include "core/Config.hpp"
 
-ClassManager::ClassManager()
+Manager::Manager()
 {
   load();
 }
 
-void ClassManager::addClass(std::string code)
+void Manager::addClass(std::string code)
 {
   _classes[code] = Class(code);
 }
 
-int ClassManager::removeClass(std::string code)
+int Manager::removeClass(std::string code)
 {
   if (_classes.erase(code))
     return 0;
@@ -22,7 +22,7 @@ int ClassManager::removeClass(std::string code)
   return -1;
 }
 
-int ClassManager::save()
+int Manager::save()
 {
   std::filesystem::create_directories(Config::DATA_DIR);
   std::ofstream file(Config::DATA_DIR / "classes.json");
@@ -37,7 +37,7 @@ int ClassManager::save()
   return 0;
 }
 
-int ClassManager::load()
+int Manager::load()
 {
   std::ifstream file(Config::DATA_DIR / "classes.json");
 

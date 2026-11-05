@@ -2,8 +2,8 @@
 #define CLASS_COMMANDS_H
 
 #include "CLI/CLI.hpp"
-#include "core/ClassManager.hpp"
+#include "core/Manager.hpp"
 
-void registerCommands(CLI::App& app, ClassManager& manager);
+void registerCommands(CLI::App& app, Manager& manager);
 
 #endif // !CLASS_COMMANDS_H
