@@ -30,6 +30,14 @@ int Manager::addAssessment(std::string code, std::string name, double weight, do
   return _classes[code].addAssessment(name, weight, grade);
 }
 
+int Manager::removeAssessment(std::string code, std::string name)
+{
+  if (not _classes.contains(code))
+    return -1;
+
+  return _classes[code].removeAssessment(name);
+}
+
 int Manager::save()
 {
   std::filesystem::create_directories(Config::DATA_DIR);

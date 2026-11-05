@@ -14,6 +14,13 @@ int Class::addAssessment(const std::string& name, double weight, double grade)
   return -1;
 }
 
+int Class::removeAssessment(const std::string& name)
+{
+  if (_assessments.erase(name))
+    return 0;
+  return -1;
+}
+
 void to_json(nlohmann::json& j, const Class& c)
 {
   j = {

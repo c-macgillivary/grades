@@ -20,6 +20,7 @@ public:
   }
 
   int addAssessment(const std::string& name, double weight, double grade = -1.0);
+  int removeAssessment(const std::string& name);
 
   friend void to_json(nlohmann::json& j, const Class& c);
   friend void from_json(const nlohmann::json& j, Class& c);
