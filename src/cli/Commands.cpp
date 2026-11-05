@@ -2,7 +2,7 @@
 
 #include "cli/Commands.hpp"
 
-void registerCommands(CLI::App& app, Manager& manager)
+void registerClassCommands(CLI::App& app, Manager& manager)
 {
   auto class_cmd = app.add_subcommand("class", "Manage classes");
   auto class_add = class_cmd->add_subcommand("add", "Add classes");
@@ -23,4 +23,9 @@ void registerCommands(CLI::App& app, Manager& manager)
                          auto classes = manager.getClasses();
                          for (auto& [code, c] : classes)
                            std::cout << code << std::endl; });
+}
+
+void registerCommands(CLI::App& app, Manager& manager)
+{
+  registerClassCommands(app, manager);
 }
