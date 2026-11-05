@@ -1,5 +1,4 @@
 #include <CLI/App.hpp>
-#include <iostream>
 
 #include "cli/ClassCommands.hpp"
 #include "core/Manager.hpp"
