@@ -1,6 +1,6 @@
 #include "core/Class.hpp"
 
-Class::Class(std::string code) :
+Class::Class(const std::string& code) :
   _code(code)
 {
 }

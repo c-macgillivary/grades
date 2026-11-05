@@ -12,7 +12,7 @@ private:
   std::string _code;
 
 public:
-  explicit Class(std::string code = "");
+  explicit Class(const std::string& code = "");
 
   const std::string& getCode() const
   {
