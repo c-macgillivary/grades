@@ -14,6 +14,14 @@ private:
 public:
   explicit Assessment(std::string name = "", double weight = 0.0, double grade = -1);
 
+  // Returns the previous value of the grade
+  int setGrade(double grade)
+  {
+    auto temp = (int)_grade;
+    _grade = grade;
+    return temp;
+  }
+
   friend void to_json(nlohmann::json& j, const Assessment& a);
   friend void from_json(const nlohmann::json& j, Assessment& a);
 };
