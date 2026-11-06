@@ -14,6 +14,11 @@ private:
 public:
   explicit Assessment(std::string name = "", double weight = 0.0, double grade = -1);
 
+  double getGrade() const
+  {
+    return _grade;
+  }
+
   // Returns the previous value of the grade
   int setGrade(double grade)
   {
