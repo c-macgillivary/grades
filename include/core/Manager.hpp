@@ -20,6 +20,7 @@ public:
   int removeAssessment(const std::string& code, const std::string& name);
 
   int updateGrade(const std::string& code, const std::string& name, double grade);
+  int getGrade(const std::string& code, const std::string& name) const;
 
   const std::unordered_map<std::string, Class>& getClasses() const
   {

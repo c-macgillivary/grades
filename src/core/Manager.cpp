@@ -45,6 +45,13 @@ int Manager::updateGrade(const std::string& code, const std::string& name, doubl
   return _classes[code].updateGrade(name, grade);
 }
 
+int Manager::getGrade(const std::string& code, const std::string& name) const
+{
+  if (not _classes.contains(code))
+    return -1;
+  return _classes.at(code).getGrade(name);
+}
+
 int Manager::save()
 {
   std::filesystem::create_directories(Config::DATA_DIR);
