@@ -21,6 +21,13 @@ int Class::removeAssessment(const std::string& name)
   return -1;
 }
 
+int Class::updateGrade(const std::string& name, double grade)
+{
+  if (not _assessments.contains(name))
+    return -1;
+  return _assessments[name].setGrade(grade);
+}
+
 void to_json(nlohmann::json& j, const Class& c)
 {
   j = {
