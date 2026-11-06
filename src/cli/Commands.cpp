@@ -86,6 +86,18 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
     int ret = manager.updateGrade(code, name, grade);
     if (ret >= 0) // update grade did not error
       std::cout << "Grade for " << name << " in " << code << " updated from " << ret << " to " << grade << std::endl; });
+
+  // grade show subcommand
+  auto grade_show = grade_cmd->add_subcommand("show", "Show grades");
+  grade_show->alias("s");
+  grade_show->add_option("<course_code>", code, "The course the grade is in")->required();
+  grade_show->add_option("<assessment_name>", name, "The assessment's grade to be shown")->required();
+  grade_show->callback([&]() {
+    double grade = manager.getGrade(code, name);
+    if (grade >= 0) // update grade did not error
+      std::cout << "Grade for " << name << " in " << code << " is " << grade << std::endl;
+    else // TODO add error checking for assignment/class does not exist
+      std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;});
 }
 
 void registerCommands(CLI::App& app, Manager& manager)
