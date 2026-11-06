@@ -28,6 +28,13 @@ int Class::updateGrade(const std::string& name, double grade)
   return _assessments[name].setGrade(grade);
 }
 
+double Class::getGrade(const std::string& name) const
+{
+  if (not _assessments.contains(name))
+    return -1;
+  return _assessments.at(name).getGrade();
+}
+
 void to_json(nlohmann::json& j, const Class& c)
 {
   j = {

@@ -23,6 +23,8 @@ public:
   // Returns -1 for an error, or the old value of the grade
   int updateGrade(const std::string& name, double grade);
 
+  double getGrade(const std::string& name) const;
+
   friend void to_json(nlohmann::json& j, const Class& c);
   friend void from_json(const nlohmann::json& j, Class& c);
 };
