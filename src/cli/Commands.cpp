@@ -56,7 +56,7 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_add->add_option("<course_code>", code, "Code of the course with the assessment")->required();
   assessments_add->add_option("<assessment_name>", name, "Name of the assessment to be added")->required();
   assessments_add->add_option("<weight>", weight, "Weight of the assessment towards the final grade\nInput either as a percentage of final grade (83.7) or points (25.5/30)")->required();
-  assessments_add->add_option("[grade]", grade, "Grade achieved, either as a percentage (83.7) or points (25.5/30)");
+  assessments_add->add_option("grade", grade, "Grade achieved, either as a percentage (83.7) or points (25.5/30)");
   assessments_add->callback([&]()
                             {
                               if (manager.addAssessment(code, name, weight, grade) == 0)
@@ -103,18 +103,19 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
                                          " updated from " << ret << " to " << grade << std::endl; });
 
   // grade show subcommand
-  auto grade_show = grade_cmd->add_subcommand("show", "Show grades");
+  auto grade_show = grade_cmd->add_subcommand("show", "Show course/assessment grades");
   static bool showScore = false;
   static bool showPercent = true; // default true
   static bool showExact = false;
 
   grade_show->alias("s");
-  auto scoreFlag = grade_show->add_flag("-s,--score", showScore, "Show grade as a score out of X points");
-  grade_show->add_flag("-p,--percent,--percentage", showPercent, "Show grade as a percentage")->excludes("-s");
+  auto scoreFlag = grade_show->add_flag("-s,--score", showScore, "Show assessment grade as a score out of X points");
+  grade_show->add_flag("-p,--percent,--percentage", showPercent, "Show grade as a percentage (default)")->excludes("-s");
   scoreFlag->excludes("-p");
+  grade_show->get_formatter()->column_width(35);
   grade_show->add_option("<course_code>", code, "The course the grade is in")->required();
-  grade_show->add_option("<assessment_name>", name, "The assessment's grade to be shown");
-  grade_show->add_flag("-e,--exact", showExact, "Show exact grade (no rounding)")->excludes("<assessment_name>");
+  grade_show->add_option("assessment_name", name, "The assessment's grade to be shown. Leave blank to show course grade");
+  grade_show->add_flag("-e,--exact", showExact, "Show exact grade (no rounding)")->excludes("assessment_name", "-s");
   grade_show->callback([&]()
                        {
                         if (name != "")
