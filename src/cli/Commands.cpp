@@ -112,24 +112,33 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   grade_show->add_flag("-p,--percent,--percentage", showPercent, "Show grade as a percentage")->excludes("-s");
   scoreFlag->excludes("-p");
   grade_show->add_option("<course_code>", code, "The course the grade is in")->required();
-  grade_show->add_option("<assessment_name>", name, "The assessment's grade to be shown")->required();
+  grade_show->add_option("<assessment_name>", name, "The assessment's grade to be shown");
   grade_show->callback([&]()
                        {
-                        if (showScore)
+                        if (name != "")
                         {
-                          std::string score = manager.getScore(code, name);
-                          if (score != "") // getScore() did not error
-                            std::cout << "Grade for " << name << " in " << code << " is " << score << std::endl;
-                          else // TODO add error checking for assignment/course does not exist
-                            std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
-                            }
+                          if (showScore)
+                          {
+                            std::string score = manager.getScore(code, name);
+                            if (score != "") // getScore() did not error
+                              std::cout << "Grade for " << name << " in " << code << " is " << score << std::endl;
+                            else // TODO add error checking for assignment/course does not exist
+                              std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+                              }
+                          else
+                          {
+                            double percent = manager.getPercentage(code, name);
+                            if (percent >= 0) // update grade did not error
+                              std::cout << "Grade for " << name << " in " << code << " is " << percent << "%" << std::endl;
+                            else // TODO add error checking for assignment/course does not exist
+                              std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+                          }
+                        }
                         else
                         {
-                          double percent = manager.getPercentage(code, name);
-                          if (percent >= 0) // update grade did not error
-                            std::cout << "Grade for " << name << " in " << code << " is " << percent << "%" << std::endl;
-                          else // TODO add error checking for assignment/course does not exist
-                            std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+                          double grade = manager.getCurrentGrade(code);
+                          if (grade >= 0)
+                            std::cout << "Current grade in " << code << " is " << grade << "%" << std::endl;
                         } });
 }
 
