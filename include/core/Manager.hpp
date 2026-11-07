@@ -9,6 +9,7 @@ class Manager
 {
 private:
   std::unordered_map<std::string, Course> _courses;
+  bool _clean = false;
 
 public:
   Manager();
@@ -24,6 +25,7 @@ public:
   std::string getScore(const std::string& code, const std::string& name) const;
 
   std::string dump() const;
+  void clean();
 
   const std::unordered_map<std::string, Course>& getCourses() const
   {

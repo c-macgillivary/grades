@@ -69,8 +69,17 @@ std::string Manager::dump() const
   return data.dump(4);
 }
 
+void Manager::clean()
+{
+  std::filesystem::remove(Config::DATA_DIR / "courses.json");
+  _clean = true;
+}
+
 int Manager::save()
 {
+  if (_clean) // Do not save if the user just cleaned the data
+    return 0;
+
   std::filesystem::create_directories(Config::DATA_DIR);
   std::ofstream file(Config::DATA_DIR / "courses.json");
   nlohmann::json data = _courses;

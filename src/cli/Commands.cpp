@@ -143,4 +143,17 @@ void registerCommands(CLI::App& app, Manager& manager)
 
   dump->callback([&]()
                  { std::cout << manager.dump() << '\n'; });
+
+  auto clean = app.add_subcommand("clean", "WARNING !!! REMOVES ALL STORED DATA !!! WARNING");
+  clean->require_subcommand(0);
+  clean->callback([&]()
+                  {
+                    std::cout << "This will delete ALL stored data. Are you sure? Type \"clean\" to confirm: ";
+                    std::string input = "";
+                    std::getline(std::cin, input);
+                    if (input == "clean")
+                    {
+                      manager.clean();
+                      std::cout << "Successfully deleted ALL stored data" << std::endl;
+                    } });
 }
