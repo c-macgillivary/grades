@@ -17,7 +17,7 @@ public:
   int addCourse(const std::string& code);
   int removeCourse(const std::string& code);
 
-  int addAssessment(const std::string& code, const std::string& name, double weight, const std::string& grade = "");
+  int addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade = "");
   int removeAssessment(const std::string& code, const std::string& name);
 
   std::string updateGrade(const std::string& code, const std::string& name, const std::string& grade);

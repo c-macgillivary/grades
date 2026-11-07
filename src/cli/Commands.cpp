@@ -49,13 +49,13 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   auto assessments_add = assessments_cmd->add_subcommand("add", "Add assessments");
   static std::string code = "";
   static std::string name = "";
-  static double weight = 0.0;
+  static std::string weight = "";
   static std::string grade = "";
 
   assessments_add->alias("a");
   assessments_add->add_option("<course_code>", code, "Code of the course with the assessment")->required();
   assessments_add->add_option("<assessment_name>", name, "Name of the assessment to be added")->required();
-  assessments_add->add_option("<weight>", weight, "Weight of the assessment towards the final grade")->required();
+  assessments_add->add_option("<weight>", weight, "Weight of the assessment towards the final grade\nInput either as a percentage of final grade (83.7) or points (25.5/30)")->required();
   assessments_add->add_option("[grade]", grade, "Grade achieved, either as a percentage (83.7) or points (25.5/30)");
   assessments_add->callback([&]()
                             {

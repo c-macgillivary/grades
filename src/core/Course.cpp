@@ -5,7 +5,7 @@ Course::Course(const std::string& code) :
 {
 }
 
-int Course::addAssessment(const std::string& name, double weight, const std::string& grade)
+int Course::addAssessment(const std::string& name, const std::string& weight, const std::string& grade)
 {
   // try_emplace returns a std::pair with the second being a bool
   // true if inserted, false if the key already existed

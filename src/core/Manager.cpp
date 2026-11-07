@@ -26,7 +26,7 @@ int Manager::removeCourse(const std::string& code)
   return -1;
 }
 
-int Manager::addAssessment(const std::string& code, const std::string& name, double weight, const std::string& grade)
+int Manager::addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade)
 {
   if (not _courses.contains(code))
     return -1;

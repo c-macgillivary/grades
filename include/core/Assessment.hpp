@@ -4,20 +4,21 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-std::pair<double, double> parseGrade(const std::string& input);
+std::pair<double, double> parseValue(const std::string& input);
 std::string unparseGrade(double score, double total, bool usePercent = false);
 
 class Assessment
 {
 private:
   std::string _name = "";
-  double _weight = 0.0;
+  int _totalWeight = 1;
+  double _partWeight = 0.0;
   int _total = -1;
   double _score = -1;
 
 public:
   Assessment() = default;
-  Assessment(const std::string& name, double weight, const std::string& grade);
+  Assessment(const std::string& name, const std::string& weight, const std::string& grade);
 
   double getPercentage() const
   {

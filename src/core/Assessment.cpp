@@ -1,6 +1,6 @@
 #include "core/Assessment.hpp"
 
-std::pair<double, double> parseGrade(const std::string& input)
+std::pair<double, double> parseValue(const std::string& input)
 {
   if (input == "")
     return { -1, -1 };
@@ -28,20 +28,22 @@ std::string unparseGrade(double score, double total, bool usePercent)
   return std::format("{}/{}", score, total);
 }
 
-Assessment::Assessment(const std::string& name, double weight, const std::string& grade) :
-  _name(name),
-  _weight(weight)
+Assessment::Assessment(const std::string& name, const std::string& weight, const std::string& grade) :
+  _name(name)
 {
-  auto [score, total] = parseGrade(grade);
+  auto [score, total] = parseValue(grade);
   _score = score;
   _total = total;
+  auto [partWeight, totalWeight] = parseValue(weight);
+  _partWeight = partWeight;
+  _totalWeight = totalWeight;
 }
 
 std::string Assessment::setGrade(const std::string& grade)
 {
   std::string old = unparseGrade(_score, _total, true);
 
-  auto [score, total] = parseGrade(grade);
+  auto [score, total] = parseValue(grade);
   _score = score;
   _total = total;
 
@@ -52,7 +54,8 @@ void to_json(nlohmann::json& j, const Assessment& a)
 {
   j = {
     { "name", a._name },
-    { "weight", a._weight },
+    { "part weight", a._partWeight },
+    { "total weight", a._totalWeight },
     { "total", a._total },
     { "score", a._score }
   };
@@ -61,7 +64,8 @@ void to_json(nlohmann::json& j, const Assessment& a)
 void from_json(const nlohmann::json& j, Assessment& a)
 {
   j.at("name").get_to(a._name);
-  j.at("weight").get_to(a._weight);
+  j.at("part weight").get_to(a._partWeight);
+  j.at("total weight").get_to(a._totalWeight);
   j.at("total").get_to(a._total);
   j.at("score").get_to(a._score);
 }

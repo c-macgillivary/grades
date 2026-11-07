@@ -18,7 +18,7 @@ public:
     return _code;
   }
 
-  int addAssessment(const std::string& name, double weight, const std::string& grade = "");
+  int addAssessment(const std::string& name, const std::string& weight, const std::string& grade = "");
   int removeAssessment(const std::string& name);
 
   // Returns "" for an error, or the old value of the grade
