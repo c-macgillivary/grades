@@ -15,7 +15,7 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
   static std::string code = "";
   course_add->add_option("<course_code>", code, "Code of the course to be added")->required();
   course_add->callback([&]()
-                      {
+                       {
                         if (manager.addCourse(code) == 0)
                           std::cout << "Successfully added course " << code << std::endl; });
 
@@ -24,7 +24,7 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
   course_remove->alias("r");
   course_remove->add_option("<course_code>", code, "Code of the course to be removed")->required();
   course_remove->callback([&]()
-                         {
+                          {
                           if (manager.removeCourse(code) == 0)
                             std::cout << "Successfully removed course " << code << std::endl; });
 
@@ -32,7 +32,7 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
   auto course_list = course_cmd->add_subcommand("list", "List courses");
   course_list->alias("l");
   course_list->callback([&]()
-                       {
+                        {
                          auto courses = manager.getCourses();
                          for (auto& [code, c] : courses)
                            std::cout << code << std::endl; });
@@ -136,4 +136,11 @@ void registerCommands(CLI::App& app, Manager& manager)
   registerCourseCommands(app, manager);
   registerAssessmentCommands(app, manager);
   registerGradeCommands(app, manager);
+
+  auto dump = app.add_subcommand("dump", "DEBUG: Dump all saved data to the screen");
+  dump->alias("d");
+  dump->require_subcommand(0);
+
+  dump->callback([&]()
+                 { std::cout << manager.dump() << '\n'; });
 }

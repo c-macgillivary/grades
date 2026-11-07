@@ -23,6 +23,8 @@ public:
   double getPercentage(const std::string& code, const std::string& name) const;
   std::string getScore(const std::string& code, const std::string& name) const;
 
+  std::string dump() const;
+
   const std::unordered_map<std::string, Course>& getCourses() const
   {
     return _courses;

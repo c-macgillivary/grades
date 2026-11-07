@@ -63,6 +63,12 @@ std::string Manager::getScore(const std::string& code, const std::string& name) 
   return _courses.at(code).getScore(name);
 }
 
+std::string Manager::dump() const
+{
+  nlohmann::json data = _courses;
+  return data.dump(4);
+}
+
 int Manager::save()
 {
   std::filesystem::create_directories(Config::DATA_DIR);
