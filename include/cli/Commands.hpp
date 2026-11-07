@@ -1,9 +1,9 @@
-#ifndef COMMANDS_H
-#define COMMANDS_H
+#ifndef COMMANDS_HPP
+#define COMMANDS_HPP
 
 #include "CLI/CLI.hpp"
 #include "core/Manager.hpp"
 
 void registerCommands(CLI::App& app, Manager& manager);
 
-#endif // !COMMANDS_H
+#endif // !COMMANDS_HPP

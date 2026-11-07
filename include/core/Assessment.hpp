@@ -1,5 +1,5 @@
-#ifndef ASSESSMENT_H
-#define ASSESSMENT_H
+#ifndef ASSESSMENT_HPP
+#define ASSESSMENT_HPP
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -38,4 +38,4 @@ public:
   friend void from_json(const nlohmann::json& j, Assessment& a);
 };
 
-#endif // !ASSESSMENT_H
+#endif // !ASSESSMENT_HPP
