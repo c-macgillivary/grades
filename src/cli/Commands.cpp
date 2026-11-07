@@ -2,39 +2,39 @@
 
 #include "cli/Commands.hpp"
 
-void registerClassCommands(CLI::App& app, Manager& manager)
+void registerCourseCommands(CLI::App& app, Manager& manager)
 {
-  // class subcommand
-  auto class_cmd = app.add_subcommand("class", "Manage classes");
-  class_cmd->alias("c");
-  class_cmd->require_subcommand(1);
+  // course subcommand
+  auto course_cmd = app.add_subcommand("course", "Manage courses");
+  course_cmd->alias("c");
+  course_cmd->require_subcommand(1);
 
-  // class add subcommand
-  auto class_add = class_cmd->add_subcommand("add", "Add classes");
-  class_add->alias("a");
+  // course add subcommand
+  auto course_add = course_cmd->add_subcommand("add", "Add courses");
+  course_add->alias("a");
   static std::string code = "";
-  class_add->add_option("<course_code>", code, "Code of the class to be added")->required();
-  class_add->callback([&]()
+  course_add->add_option("<course_code>", code, "Code of the course to be added")->required();
+  course_add->callback([&]()
                       {
-                        if (manager.addClass(code) == 0)
+                        if (manager.addCourse(code) == 0)
                           std::cout << "Successfully added course " << code << std::endl; });
 
-  // class remove subcommand
-  auto class_remove = class_cmd->add_subcommand("remove", "Remove classes");
-  class_remove->alias("r");
-  class_remove->add_option("<course_code>", code, "Code of the class to be removed")->required();
-  class_remove->callback([&]()
+  // course remove subcommand
+  auto course_remove = course_cmd->add_subcommand("remove", "Remove courses");
+  course_remove->alias("r");
+  course_remove->add_option("<course_code>", code, "Code of the course to be removed")->required();
+  course_remove->callback([&]()
                          {
-                          if (manager.removeClass(code) == 0)
+                          if (manager.removeCourse(code) == 0)
                             std::cout << "Successfully removed course " << code << std::endl; });
 
-  // class list subcommand
-  auto class_list = class_cmd->add_subcommand("list", "List classes");
-  class_list->alias("l");
-  class_list->callback([&]()
+  // course list subcommand
+  auto course_list = course_cmd->add_subcommand("list", "List courses");
+  course_list->alias("l");
+  course_list->callback([&]()
                        {
-                         auto classes = manager.getClasses();
-                         for (auto& [code, c] : classes)
+                         auto courses = manager.getCourses();
+                         for (auto& [code, c] : courses)
                            std::cout << code << std::endl; });
 }
 
@@ -118,7 +118,7 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
                           std::string score = manager.getScore(code, name);
                           if (score != "") // getScore() did not error
                             std::cout << "Grade for " << name << " in " << code << " is " << score << std::endl;
-                          else // TODO add error checking for assignment/class does not exist
+                          else // TODO add error checking for assignment/course does not exist
                             std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
                             }
                         else
@@ -126,14 +126,14 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
                           double percent = manager.getPercentage(code, name);
                           if (percent >= 0) // update grade did not error
                             std::cout << "Grade for " << name << " in " << code << " is " << percent << "%" << std::endl;
-                          else // TODO add error checking for assignment/class does not exist
+                          else // TODO add error checking for assignment/course does not exist
                             std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
                         } });
 }
 
 void registerCommands(CLI::App& app, Manager& manager)
 {
-  registerClassCommands(app, manager);
+  registerCourseCommands(app, manager);
   registerAssessmentCommands(app, manager);
   registerGradeCommands(app, manager);
 }

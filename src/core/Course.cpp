@@ -1,11 +1,11 @@
-#include "core/Class.hpp"
+#include "core/Course.hpp"
 
-Class::Class(const std::string& code) :
+Course::Course(const std::string& code) :
   _code(code)
 {
 }
 
-int Class::addAssessment(const std::string& name, double weight, const std::string& grade)
+int Course::addAssessment(const std::string& name, double weight, const std::string& grade)
 {
   // try_emplace returns a std::pair with the second being a bool
   // true if inserted, false if the key already existed
@@ -14,35 +14,35 @@ int Class::addAssessment(const std::string& name, double weight, const std::stri
   return -1;
 }
 
-int Class::removeAssessment(const std::string& name)
+int Course::removeAssessment(const std::string& name)
 {
   if (_assessments.erase(name))
     return 0;
   return -1;
 }
 
-std::string Class::updateGrade(const std::string& name, const std::string& grade)
+std::string Course::updateGrade(const std::string& name, const std::string& grade)
 {
   if (not _assessments.contains(name))
     return "";
   return _assessments[name].setGrade(grade);
 }
 
-double Class::getPercentage(const std::string& name) const
+double Course::getPercentage(const std::string& name) const
 {
   if (_assessments.contains(name))
     return _assessments.at(name).getPercentage();
   return -1.0;
 }
 
-std::string Class::getScore(const std::string& name) const
+std::string Course::getScore(const std::string& name) const
 {
   if (_assessments.contains(name))
     return _assessments.at(name).getScore();
   return "";
 }
 
-void to_json(nlohmann::json& j, const Class& c)
+void to_json(nlohmann::json& j, const Course& c)
 {
   j = {
     { "code", c._code },
@@ -50,7 +50,7 @@ void to_json(nlohmann::json& j, const Class& c)
   };
 }
 
-void from_json(const nlohmann::json& j, Class& c)
+void from_json(const nlohmann::json& j, Course& c)
 {
   j.at("code").get_to(c._code);
   j.at("assessments").get_to(c._assessments);

@@ -3,18 +3,18 @@
 
 #include <string>
 
-#include "core/Class.hpp"
+#include "core/Course.hpp"
 
 class Manager
 {
 private:
-  std::unordered_map<std::string, Class> _classes;
+  std::unordered_map<std::string, Course> _courses;
 
 public:
   Manager();
 
-  int addClass(const std::string& code);
-  int removeClass(const std::string& code);
+  int addCourse(const std::string& code);
+  int removeCourse(const std::string& code);
 
   int addAssessment(const std::string& code, const std::string& name, double weight, const std::string& grade = "");
   int removeAssessment(const std::string& code, const std::string& name);
@@ -23,9 +23,9 @@ public:
   double getPercentage(const std::string& code, const std::string& name) const;
   std::string getScore(const std::string& code, const std::string& name) const;
 
-  const std::unordered_map<std::string, Class>& getClasses() const
+  const std::unordered_map<std::string, Course>& getCourses() const
   {
-    return _classes;
+    return _courses;
   }
 
   int save();

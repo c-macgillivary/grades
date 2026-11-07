@@ -1,17 +1,17 @@
-#ifndef CLASS_H
-#define CLASS_H
+#ifndef COURSE_HPP
+#define COURSE_HPP
 
 #include "core/Assessment.hpp"
 
-class Class
+class Course
 {
 private:
   std::unordered_map<std::string, Assessment> _assessments;
   std::string _code;
 
 public:
-  Class() = default;
-  explicit Class(const std::string& code);
+  Course() = default;
+  explicit Course(const std::string& code);
 
   const std::string& getCode() const
   {
@@ -27,8 +27,8 @@ public:
   double getPercentage(const std::string& name) const;
   std::string getScore(const std::string& name) const;
 
-  friend void to_json(nlohmann::json& j, const Class& c);
-  friend void from_json(const nlohmann::json& j, Class& c);
+  friend void to_json(nlohmann::json& j, const Course& c);
+  friend void from_json(const nlohmann::json& j, Course& c);
 };
 
-#endif // !CLASS_H
+#endif // !COURSE_HPP
