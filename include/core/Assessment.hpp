@@ -32,6 +32,11 @@ public:
     return unparseValue(_score, _total);
   }
 
+  double getExactWeight() const
+  {
+    return _partWeight / _totalWeight * 100.0;
+  }
+
   std::string getWeight() const
   {
     return unparseValue(_partWeight, _totalWeight);
