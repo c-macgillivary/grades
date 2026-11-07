@@ -15,14 +15,18 @@ void registerClassCommands(CLI::App& app, Manager& manager)
   static std::string code = "";
   class_add->add_option("<course_code>", code, "Code of the class to be added")->required();
   class_add->callback([&]()
-                      { manager.addClass(code); });
+                      {
+                        if (manager.addClass(code) == 0)
+                          std::cout << "Successfully added course " << code << std::endl; });
 
   // class remove subcommand
   auto class_remove = class_cmd->add_subcommand("remove", "Remove classes");
   class_remove->alias("r");
   class_remove->add_option("<course_code>", code, "Code of the class to be removed")->required();
   class_remove->callback([&]()
-                         { manager.removeClass(code); });
+                         {
+                          if (manager.removeClass(code) == 0)
+                            std::cout << "Successfully removed course " << code << std::endl; });
 
   // class list subcommand
   auto class_list = class_cmd->add_subcommand("list", "List classes");
@@ -54,7 +58,9 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_add->add_option("<weight>", weight, "Weight of the assessment towards the final grade")->required();
   assessments_add->add_option("[grade]", grade, "Grade achieved, either as a percentage (83.7) or points (25.5/30)");
   assessments_add->callback([&]()
-                            { manager.addAssessment(code, name, weight, grade); });
+                            {
+                              if (manager.addAssessment(code, name, weight, grade) == 0)
+                                std::cout << "Successfully added assessment " << name << " to " << code << std::endl; });
 
   // assessment remove subcommand
   auto assessments_remove = assessments_cmd->add_subcommand("remove", "Remove assessments");
@@ -62,7 +68,9 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_remove->add_option("<course_code>", code, "Code of the course with the assessment")->required();
   assessments_remove->add_option("<assessment_name>", name, "Name of the assessment to be removed")->required();
   assessments_remove->callback([&]()
-                               { manager.removeAssessment(code, name); });
+                               {
+                                if (manager.removeAssessment(code, name) == 0)
+                                  std::cout << "Successfully removed assessment " << name << " from " << code << std::endl; });
 }
 
 void registerGradeCommands(CLI::App& app, Manager& manager)
