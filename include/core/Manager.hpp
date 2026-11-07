@@ -16,11 +16,12 @@ public:
   void addClass(const std::string& code);
   int removeClass(const std::string& code);
 
-  int addAssessment(const std::string& code, const std::string& name, double weight, double grade);
+  int addAssessment(const std::string& code, const std::string& name, double weight, const std::string& grade = "");
   int removeAssessment(const std::string& code, const std::string& name);
 
-  int updateGrade(const std::string& code, const std::string& name, double grade);
-  int getGrade(const std::string& code, const std::string& name) const;
+  std::string updateGrade(const std::string& code, const std::string& name, const std::string& grade);
+  double getPercentage(const std::string& code, const std::string& name) const;
+  std::string getScore(const std::string& code, const std::string& name) const;
 
   const std::unordered_map<std::string, Class>& getClasses() const
   {

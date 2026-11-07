@@ -22,7 +22,7 @@ int Manager::removeClass(const std::string& code)
   return -1;
 }
 
-int Manager::addAssessment(const std::string& code, const std::string& name, double weight, double grade)
+int Manager::addAssessment(const std::string& code, const std::string& name, double weight, const std::string& grade)
 {
   if (not _classes.contains(code))
     return -1;
@@ -38,18 +38,25 @@ int Manager::removeAssessment(const std::string& code, const std::string& name)
   return _classes[code].removeAssessment(name);
 }
 
-int Manager::updateGrade(const std::string& code, const std::string& name, double grade)
+std::string Manager::updateGrade(const std::string& code, const std::string& name, const std::string& grade)
 {
   if (not _classes.contains(code))
-    return -1;
+    return "";
   return _classes[code].updateGrade(name, grade);
 }
 
-int Manager::getGrade(const std::string& code, const std::string& name) const
+double Manager::getPercentage(const std::string& code, const std::string& name) const
 {
   if (not _classes.contains(code))
     return -1;
-  return _classes.at(code).getGrade(name);
+  return _classes.at(code).getPercentage(name);
+}
+
+std::string Manager::getScore(const std::string& code, const std::string& name) const
+{
+  if (not _classes.contains(code))
+    return "";
+  return _classes.at(code).getScore(name);
 }
 
 int Manager::save()

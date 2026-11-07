@@ -10,20 +10,22 @@ private:
   std::string _code;
 
 public:
-  explicit Class(const std::string& code = "");
+  Class() = default;
+  explicit Class(const std::string& code);
 
   const std::string& getCode() const
   {
     return _code;
   }
 
-  int addAssessment(const std::string& name, double weight, double grade = -1.0);
+  int addAssessment(const std::string& name, double weight, const std::string& grade = "");
   int removeAssessment(const std::string& name);
 
-  // Returns -1 for an error, or the old value of the grade
-  int updateGrade(const std::string& name, double grade);
+  // Returns "" for an error, or the old value of the grade
+  std::string updateGrade(const std::string& name, const std::string& grade);
 
-  double getGrade(const std::string& name) const;
+  double getPercentage(const std::string& name) const;
+  std::string getScore(const std::string& name) const;
 
   friend void to_json(nlohmann::json& j, const Class& c);
   friend void from_json(const nlohmann::json& j, Class& c);
