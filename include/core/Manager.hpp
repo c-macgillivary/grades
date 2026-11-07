@@ -13,7 +13,7 @@ private:
 public:
   Manager();
 
-  void addClass(const std::string& code);
+  int addClass(const std::string& code);
   int removeClass(const std::string& code);
 
   int addAssessment(const std::string& code, const std::string& name, double weight, const std::string& grade = "");

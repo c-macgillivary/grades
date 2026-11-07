@@ -9,9 +9,13 @@ Manager::Manager()
   load();
 }
 
-void Manager::addClass(const std::string& code)
+int Manager::addClass(const std::string& code)
 {
+  if (_classes.contains(code))
+    return -1;
+
   _classes[code] = Class(code);
+  return 0;
 }
 
 int Manager::removeClass(const std::string& code)
