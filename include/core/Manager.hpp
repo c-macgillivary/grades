@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "core/Config.hpp"
 #include "core/Course.hpp"
 
 class Manager
@@ -30,6 +31,11 @@ public:
   const std::unordered_map<std::string, Course>& getCourses() const
   {
     return _courses;
+  }
+
+  static std::string getPath()
+  {
+    return Config::DATA_DIR.string() + "/courses.json";
   }
 
   int save();

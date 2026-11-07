@@ -154,6 +154,6 @@ void registerCommands(CLI::App& app, Manager& manager)
                     if (input == "clean")
                     {
                       manager.clean();
-                      std::cout << "Successfully deleted ALL stored data" << std::endl;
+                      std::cout << "Successfully deleted ALL stored data at " << manager.getPath() << std::endl;
                     } });
 }
