@@ -24,6 +24,7 @@ public:
   std::string updateGrade(const std::string& code, const std::string& name, const std::string& grade);
   double getPercentage(const std::string& code, const std::string& name) const;
   std::string getScore(const std::string& code, const std::string& name) const;
+  double getCurrentGrade(const std::string& code) const;
 
   std::string dump() const;
   void clean();

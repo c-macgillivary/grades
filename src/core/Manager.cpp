@@ -1,6 +1,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+#include "core/Calculate.hpp"
 #include "core/Config.hpp"
 #include "core/Manager.hpp"
 
@@ -61,6 +62,13 @@ std::string Manager::getScore(const std::string& code, const std::string& name) 
   if (not _courses.contains(code))
     return "";
   return _courses.at(code).getScore(name);
+}
+
+double Manager::getCurrentGrade(const std::string& code) const
+{
+  if (not _courses.contains(code))
+    return -1;
+  return Calculate::currentGrade(_courses.at(code));
 }
 
 std::string Manager::dump() const
