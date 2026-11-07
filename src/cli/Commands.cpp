@@ -106,6 +106,7 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   auto grade_show = grade_cmd->add_subcommand("show", "Show grades");
   static bool showScore = false;
   static bool showPercent = true; // default true
+  static bool showExact = false;
 
   grade_show->alias("s");
   auto scoreFlag = grade_show->add_flag("-s,--score", showScore, "Show grade as a score out of X points");
@@ -113,6 +114,7 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   scoreFlag->excludes("-p");
   grade_show->add_option("<course_code>", code, "The course the grade is in")->required();
   grade_show->add_option("<assessment_name>", name, "The assessment's grade to be shown");
+  grade_show->add_flag("-e,--exact", showExact, "Show exact grade (no rounding)")->excludes("<assessment_name>");
   grade_show->callback([&]()
                        {
                         if (name != "")
@@ -137,6 +139,8 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
                         else
                         {
                           double grade = manager.getCurrentGrade(code);
+                          if (not showExact)
+                            grade = round(grade);
                           if (grade >= 0)
                             std::cout << "Current grade in " << code << " is " << grade << "%" << std::endl;
                         } });
