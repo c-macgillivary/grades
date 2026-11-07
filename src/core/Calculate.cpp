@@ -1,5 +1,7 @@
 #include "core/Calculate.hpp"
 
+namespace Calculate
+{
 double currentGrade(const Course& course)
 {
   const std::unordered_map<std::string, Assessment>& assessments = course.getAssessments();
@@ -15,3 +17,4 @@ double currentGrade(const Course& course)
 
   return achievedScore / assessedWeight;
 }
+}; // namespace Calculate
