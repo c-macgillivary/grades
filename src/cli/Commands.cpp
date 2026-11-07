@@ -96,7 +96,9 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
                           if (grade.find("/") == std::string::npos and
                               grade.find("%") == std::string::npos) // If the input was given in percent without "%"
                             grade += "%";
-                          if (ret != "") // update grade did not error
+                          if (ret == "new") // first time a grade is being set
+                            std::cout << "Added grade " << grade << " to assessment " << name << " in " << code << std::endl;
+                          else if (ret != "") // update grade did not error
                             std::cout << "Grade for " << name << " in " << code <<
                                          " updated from " << ret << " to " << grade << std::endl; });
 

@@ -42,6 +42,8 @@ Assessment::Assessment(const std::string& name, const std::string& weight, const
 std::string Assessment::setGrade(const std::string& grade)
 {
   std::string old = unparseGrade(_score, _total, true);
+  if (old == "")
+    old = "new";
 
   auto [score, total] = parseValue(grade);
   _score = score;
