@@ -11,7 +11,7 @@ class Assessment
 {
 private:
   std::string _name = "";
-  int _totalWeight = 1;
+  double _totalWeight = 1;
   double _partWeight = 0.0;
   int _total = -1;
   double _score = -1;
