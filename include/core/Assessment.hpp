@@ -5,7 +5,7 @@
 #include <string>
 
 std::pair<double, double> parseValue(const std::string& input);
-std::string unparseGrade(double score, double total, bool usePercent = false);
+std::string unparseValue(double score, double total, bool usePercent = false);
 
 class Assessment
 {
@@ -29,7 +29,12 @@ public:
 
   std::string getScore() const
   {
-    return unparseGrade(_score, _total);
+    return unparseValue(_score, _total);
+  }
+
+  std::string getWeight() const
+  {
+    return unparseValue(_partWeight, _totalWeight);
   }
 
   // Returns the previous value of the grade

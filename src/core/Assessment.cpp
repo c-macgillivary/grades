@@ -19,7 +19,7 @@ std::pair<double, double> parseValue(const std::string& input)
   return { std::stod(input), 100 };
 }
 
-std::string unparseGrade(double score, double total, bool usePercent)
+std::string unparseValue(double score, double total, bool usePercent)
 {
   if (score < 0 or total <= 0)
     return "";
@@ -41,7 +41,7 @@ Assessment::Assessment(const std::string& name, const std::string& weight, const
 
 std::string Assessment::setGrade(const std::string& grade)
 {
-  std::string old = unparseGrade(_score, _total, true);
+  std::string old = unparseValue(_score, _total, true);
   if (old == "")
     old = "new";
 
