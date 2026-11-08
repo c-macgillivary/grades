@@ -1,4 +1,5 @@
 #include <CLI/App.hpp>
+#include <iostream>
 
 #include "cli/Commands.hpp"
 #include "core/Manager.hpp"
@@ -13,7 +14,10 @@ int main(int argc, char** argv)
 
   CLI11_PARSE(app, argc, argv);
 
-  manager.save();
+  auto saveStatus = manager.save();
+
+  if (!saveStatus)
+    std::cout << "Could not save changes to file" << std::endl;
 
   return 0;
 }
