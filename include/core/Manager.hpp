@@ -5,6 +5,7 @@
 
 #include "core/Config.hpp"
 #include "core/Course.hpp"
+#include "core/Error.hpp"
 
 class Manager
 {
@@ -15,16 +16,16 @@ private:
 public:
   Manager();
 
-  int addCourse(const std::string& code);
-  int removeCourse(const std::string& code);
+  Result<void> addCourse(const std::string& code);
+  Result<void> removeCourse(const std::string& code);
 
-  int addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade = "");
-  int removeAssessment(const std::string& code, const std::string& name);
+  Result<void> addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade = "");
+  Result<void> removeAssessment(const std::string& code, const std::string& name);
 
-  std::string updateGrade(const std::string& code, const std::string& name, const std::string& grade);
-  double getPercentage(const std::string& code, const std::string& name) const;
-  std::string getScore(const std::string& code, const std::string& name) const;
-  double getCurrentGrade(const std::string& code) const;
+  Result<std::string> updateGrade(const std::string& code, const std::string& name, const std::string& grade);
+  Result<double> getPercentage(const std::string& code, const std::string& name) const;
+  Result<std::string> getScore(const std::string& code, const std::string& name) const;
+  Result<double> getCurrentGrade(const std::string& code) const;
 
   std::string dump() const;
   void clean();
@@ -39,9 +40,9 @@ public:
     return Config::DATA_DIR.string() + "/courses.json";
   }
 
-  int save();
+  Result<void> save();
 
-  int load();
+  void load();
 };
 
 #endif // !MANAGER_HPP
