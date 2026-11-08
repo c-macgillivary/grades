@@ -1,4 +1,4 @@
-.PHONY: all configure clean debug release install
+.PHONY: all configure debug release core install clean
 
 all: debug
 
@@ -15,6 +15,9 @@ debug: configure
 
 release: configure
 	cmake --build --preset release
+
+core: configure
+	cmake --build --preset debug --target core
 
 install: release
 	sudo cmake --install build --config release
