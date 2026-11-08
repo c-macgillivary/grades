@@ -9,7 +9,9 @@ enum class Error
   ClassAlreadyExists,
   
   AssessmentNotFound,
-  AssessmentAlreadyExists
+  AssessmentAlreadyExists,
+
+  CouldNotSaveDataToFile
 };
 
 template <typename T>
