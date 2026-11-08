@@ -16,7 +16,9 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
   course_add->add_option("<course_code>", code, "Code of the course to be added")->required();
   course_add->callback([&]()
                        {
-                        if (manager.addCourse(code) == 0)
+                        if (!manager.addCourse(code))
+                          std::cout << "Could not add course " << code << std::endl;
+                        else
                           std::cout << "Successfully added course " << code << std::endl; });
 
   // course remove subcommand
@@ -25,8 +27,10 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
   course_remove->add_option("<course_code>", code, "Code of the course to be removed")->required();
   course_remove->callback([&]()
                           {
-                          if (manager.removeCourse(code) == 0)
-                            std::cout << "Successfully removed course " << code << std::endl; });
+                            if (!manager.removeCourse(code))
+                              std::cout << "Could not remove course " << code << std::endl;
+                            else
+                              std::cout << "Successfully removed course " << code << std::endl; });
 
   // course list subcommand
   auto course_list = course_cmd->add_subcommand("list", "List courses");
@@ -59,7 +63,9 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_add->add_option("grade", grade, "Grade achieved, either as a percentage (83.7) or points (25.5/30)");
   assessments_add->callback([&]()
                             {
-                              if (manager.addAssessment(code, name, weight, grade) == 0)
+                              if (!manager.addAssessment(code, name, weight, grade))
+                                std::cout << "Could not add assessment " << name << " to " << code << std::endl;
+                              else
                                 std::cout << "Successfully added assessment " << name << " to " << code << std::endl; });
 
   // assessment remove subcommand
@@ -69,8 +75,10 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_remove->add_option("<assessment_name>", name, "Name of the assessment to be removed")->required();
   assessments_remove->callback([&]()
                                {
-                                if (manager.removeAssessment(code, name) == 0)
-                                  std::cout << "Successfully removed assessment " << name << " from " << code << std::endl; });
+                                if (!manager.removeAssessment(code, name))
+                                  std::cout << "Could not remove assessment " << name << " to " << code << std::endl;
+                                else
+                                  std::cout << "Successfully removed assessment " << name << " to " << code << std::endl; });
 }
 
 void registerGradeCommands(CLI::App& app, Manager& manager)
@@ -92,15 +100,20 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   grade_update->add_option("<new_grade>", grade, "The new grade on the assessment")->required();
   grade_update->callback([&]()
                          {
-                          std::string ret = manager.updateGrade(code, name, grade);
+                          auto ret = manager.updateGrade(code, name, grade);
+                          if (!ret)
+                          {
+                            std::cout << "Could not update grade for assessment " << name << " in " << code << std::endl;
+                            return;
+                          }
                           if (grade.find("/") == std::string::npos and
                               grade.find("%") == std::string::npos) // If the input was given in percent without "%"
                             grade += "%";
-                          if (ret == "new") // first time a grade is being set
+                          if (*ret == "new") // first time a grade is being set
                             std::cout << "Added grade " << grade << " to assessment " << name << " in " << code << std::endl;
-                          else if (ret != "") // update grade did not error
+                          else
                             std::cout << "Grade for " << name << " in " << code <<
-                                         " updated from " << ret << " to " << grade << std::endl; });
+                                         " updated from " << *ret << " to " << grade << std::endl; });
 
   // grade show subcommand
   auto grade_show = grade_cmd->add_subcommand("show", "Show course/assessment grades");
@@ -122,28 +135,43 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
                         {
                           if (showScore)
                           {
-                            std::string score = manager.getScore(code, name);
-                            if (score != "") // getScore() did not error
-                              std::cout << "Grade for " << name << " in " << code << " is " << score << std::endl;
-                            else // TODO add error checking for assignment/course does not exist
+                            auto score = manager.getScore(code, name);
+                            if (!score)
+                            {
+                              std::cout << "Could not show grade for assessment " << name << " in " << code << std::endl;
+                              return;
+                            }
+                            if (*score != "")
+                              std::cout << "Grade for " << name << " in " << code << " is " << *score << std::endl;
+                            else
                               std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
                               }
                           else
                           {
-                            double percent = manager.getPercentage(code, name);
-                            if (percent >= 0) // update grade did not error
-                              std::cout << "Grade for " << name << " in " << code << " is " << percent << "%" << std::endl;
-                            else // TODO add error checking for assignment/course does not exist
+                            auto percent = manager.getPercentage(code, name);
+                            if (!percent)
+                            {
+                              std::cout << "Could not show grade for assessment " << name << " in " << code << std::endl;
+                              return;
+                            }
+                            if (*percent >= 0)
+                              std::cout << "Grade for " << name << " in " << code << " is " << *percent << "%" << std::endl;
+                            else 
                               std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
                           }
                         }
                         else
                         {
-                          double grade = manager.getCurrentGrade(code);
+                          auto grade = manager.getCurrentGrade(code);
+                          if (!grade)
+                          {
+                            std::cout << "Could not show grade for " << code << std::endl;
+                            return;
+                          }
                           if (not showExact)
-                            grade = round(grade);
-                          if (grade >= 0)
-                            std::cout << "Current grade in " << code << " is " << grade << "%" << std::endl;
+                            *grade = round(*grade);
+                          if (*grade >= 0)
+                            std::cout << "Current grade in " << code << " is " << *grade << "%" << std::endl;
                         } });
 }
 
