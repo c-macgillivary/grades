@@ -2,6 +2,7 @@
 #define COURSE_HPP
 
 #include "core/Assessment.hpp"
+#include "core/Error.hpp"
 
 class Course
 {
@@ -23,14 +24,13 @@ public:
     return _assessments;
   }
 
-  double getPercentage(const std::string& name) const;
-  std::string getScore(const std::string& name) const;
+  Result<double> getPercentage(const std::string& name) const;
+  Result<std::string> getScore(const std::string& name) const;
 
-  int addAssessment(const std::string& name, const std::string& weight, const std::string& grade = "");
-  int removeAssessment(const std::string& name);
+  Result<void> addAssessment(const std::string& name, const std::string& weight, const std::string& grade = "");
+  Result<void> removeAssessment(const std::string& name);
 
-  // Returns "" for an error, or the old value of the grade
-  std::string updateGrade(const std::string& name, const std::string& grade);
+  Result<std::string> updateGrade(const std::string& name, const std::string& grade);
 
   friend void to_json(nlohmann::json& j, const Course& c);
   friend void from_json(const nlohmann::json& j, Course& c);

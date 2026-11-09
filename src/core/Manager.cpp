@@ -36,10 +36,7 @@ Result<void> Manager::addAssessment(const std::string& code, const std::string& 
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
 
-  if (_courses[code].addAssessment(name, weight, grade) != 0)
-    return fail(Error::AssessmentAlreadyExists);
-
-  return {};
+  return _courses[code].addAssessment(name,weight,grade);
 }
 
 Result<void> Manager::removeAssessment(const std::string& code, const std::string& name)
@@ -47,10 +44,7 @@ Result<void> Manager::removeAssessment(const std::string& code, const std::strin
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
 
-  if (_courses[code].removeAssessment(name) != 0)
-    return fail(Error::AssessmentNotFound);
-
-  return {};
+  return _courses[code].removeAssessment(name);
 }
 
 Result<std::string> Manager::updateGrade(const std::string& code, const std::string& name, const std::string& grade)

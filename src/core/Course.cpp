@@ -1,45 +1,53 @@
 #include "core/Course.hpp"
+#include "core/Error.hpp"
 
 Course::Course(const std::string& code) :
   _code(code)
 {
 }
 
-int Course::addAssessment(const std::string& name, const std::string& weight, const std::string& grade)
+Result<void> Course::addAssessment(const std::string& name, const std::string& weight, const std::string& grade)
 {
-  // try_emplace returns a std::pair with the second being a bool
-  // true if inserted, false if the key already existed
-  if (_assessments.try_emplace(name, name, weight, grade).second)
-    return 0;
-  return -1;
+  if (_assessments.contains(name))
+    return fail(Error::AssessmentAlreadyExists);
+
+  _assessments.try_emplace(name, name, weight, grade);
+
+  return {};
 }
 
-int Course::removeAssessment(const std::string& name)
-{
-  if (_assessments.erase(name))
-    return 0;
-  return -1;
-}
-
-std::string Course::updateGrade(const std::string& name, const std::string& grade)
+Result<void> Course::removeAssessment(const std::string& name)
 {
   if (not _assessments.contains(name))
-    return "";
+    return fail(Error::AssessmentNotFound);
+
+  _assessments.erase(name);
+
+  return {};
+}
+
+Result<std::string> Course::updateGrade(const std::string& name, const std::string& grade)
+{
+  if (not _assessments.contains(name))
+    return fail(Error::AssessmentNotFound);
+
   return _assessments[name].setGrade(grade);
 }
 
-double Course::getPercentage(const std::string& name) const
+Result<double> Course::getPercentage(const std::string& name) const
 {
-  if (_assessments.contains(name))
-    return _assessments.at(name).getPercentage();
-  return -1.0;
+  if (not _assessments.contains(name))
+    return fail(Error::AssessmentNotFound);
+
+  return _assessments.at(name).getPercentage();
 }
 
-std::string Course::getScore(const std::string& name) const
+Result<std::string> Course::getScore(const std::string& name) const
 {
-  if (_assessments.contains(name))
-    return _assessments.at(name).getScore();
-  return "";
+  if (not _assessments.contains(name))
+    return fail(Error::AssessmentNotFound);
+
+  return _assessments.at(name).getScore();
 }
 
 void to_json(nlohmann::json& j, const Course& c)
