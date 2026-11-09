@@ -1,5 +1,5 @@
 # Grades Tracker
-This is a project meant to track grades in a given class.
+This is a project meant to track grades in a given course.
 Functionality is being added daily.
 Planned features include:
 - Current mark calcuation
