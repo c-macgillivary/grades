@@ -1,19 +1,22 @@
 #include <iostream>
 
+#include "cli/ErrorHandling.hpp"
 #include "core/Manager.hpp"
 
 void addCourseCallback(Manager& manager, const std::string& code)
 {
-  if (!manager.addCourse(code))
-    std::cout << "Could not add course " << code << std::endl;
+  auto result = manager.addCourse(code);
+  if (!result)
+    handleAddCourseError(result, code);
   else
     std::cout << "Successfully added course " << code << std::endl;
 }
 
 void removeCourseCallback(Manager& manager, const std::string& code)
 {
-  if (!manager.removeCourse(code))
-    std::cout << "Could not remove course " << code << std::endl;
+  auto result = manager.removeCourse(code);
+  if (!result)
+    handleRemoveCourseError(result, code);
   else
     std::cout << "Successfully removed course " << code << std::endl;
 }
@@ -27,80 +30,85 @@ void listCoursesCallback(Manager& manager)
 
 void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weight, const std::string& grade)
 {
-  if (!manager.addAssessment(code, name, weight, grade))
-    std::cout << "Could not add assessment " << name << " to " << code << std::endl;
+  auto result = manager.addAssessment(code, name, weight, grade);
+  if (!result)
+    handleAddAssessmentError(result, code, name);
   else
     std::cout << "Successfully added assessment " << name << " to " << code << std::endl;
 }
 
 void removeAssessmentCallback(Manager& manager, const std::string& code, const std::string& name)
 {
-  if (!manager.removeAssessment(code, name))
-    std::cout << "Could not remove assessment " << name << " to " << code << std::endl;
+  auto result = manager.removeAssessment(code, name);
+  if (!result)
+    handleRemoveAssessmentError(result, code, name);
   else
     std::cout << "Successfully removed assessment " << name << " to " << code << std::endl;
 }
 
 void updateGradeCallback(Manager& manager, const std::string& code, const std::string& name, std::string grade)
 {
-  auto ret = manager.updateGrade(code, name, grade);
-  if (!ret)
+  auto result = manager.updateGrade(code, name, grade);
+  if (!result)
   {
-    std::cout << "Could not update grade for assessment " << name << " in " << code << std::endl;
+    handleUpdateGradeError(result, code, name);
     return;
   }
+
   if (grade.find("/") == std::string::npos and
       grade.find("%") == std::string::npos) // If the input was given in percent without "%"
     grade += "%";
-  if (*ret == "new") // first time a grade is being set
+  if (*result == "new") // first time a grade is being set
     std::cout << "Added grade " << grade << " to assessment " << name << " in " << code << std::endl;
   else
-    std::cout << "Grade for " << name << " in " << code << " updated from " << *ret << " to " << grade << std::endl;
+    std::cout << "Grade for " << name << " in " << code << " updated from " << *result << " to " << grade << std::endl;
 }
 
 void showGradeCallback(Manager& manager, bool showScore, bool showPercent, bool showExact, const std::string& code, const std::string& name)
 {
-  if (name != "")
+  if (name == "") // If no assessment name was given, show the grade in the given course
   {
-    if (showScore)
+    auto result = manager.getCurrentGrade(code);
+    if (!result)
     {
-      auto score = manager.getScore(code, name);
-      if (!score)
-      {
-        std::cout << "Could not show grade for assessment " << name << " in " << code << std::endl;
-        return;
-      }
-      if (*score != "")
-        std::cout << "Grade for " << name << " in " << code << " is " << *score << std::endl;
-      else
-        std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+      handleShowCourseGradeError(result, code);
+      return;
     }
-    else
-    {
-      auto percent = manager.getPercentage(code, name);
-      if (!percent)
-      {
-        std::cout << "Could not show grade for assessment " << name << " in " << code << std::endl;
-        return;
-      }
-      if (*percent >= 0)
-        std::cout << "Grade for " << name << " in " << code << " is " << *percent << "%" << std::endl;
-      else
-        std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
-    }
+
+    if (not showExact)
+      *result = round(*result);
+
+    std::cout << "Current grade in " << code << " is " << *result << "%" << std::endl;
   }
   else
   {
-    auto grade = manager.getCurrentGrade(code);
-    if (!grade)
+    if (showScore)
     {
-      std::cout << "Could not show grade for " << code << std::endl;
-      return;
+      auto result = manager.getScore(code, name);
+      if (!result)
+      {
+        handleShowAssessmentGradeError(result, code, name);
+        return;
+      }
+
+      if (*result != "")
+        std::cout << "Grade for " << name << " in " << code << " is " << *result << std::endl;
+      else
+        std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
     }
-    if (not showExact)
-      *grade = round(*grade);
-    if (*grade >= 0)
-      std::cout << "Current grade in " << code << " is " << *grade << "%" << std::endl;
+    else if (showPercent)
+    {
+      auto result = manager.getPercentage(code, name);
+      if (!result)
+      {
+        handleShowAssessmentGradeError(result, code, name);
+        return;
+      }
+      if (*result >= 0)
+        std::cout << "Grade for " << name << " in " << code << " is " << *result << "%" << std::endl;
+      else
+        std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+    }
   }
 }
 
