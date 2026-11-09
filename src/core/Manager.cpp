@@ -14,7 +14,7 @@ Manager::Manager()
 Result<void> Manager::addCourse(const std::string& code)
 {
   if (_courses.contains(code))
-    return fail(Error::ClassAlreadyExists);
+    return fail(Error::CourseAlreadyExists);
 
   _courses[code] = Course(code);
 
@@ -24,7 +24,7 @@ Result<void> Manager::addCourse(const std::string& code)
 Result<void> Manager::removeCourse(const std::string& code)
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   _courses.erase(code);
 
@@ -34,7 +34,7 @@ Result<void> Manager::removeCourse(const std::string& code)
 Result<void> Manager::addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade)
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   if (_courses[code].addAssessment(name, weight, grade) != 0)
     return fail(Error::AssessmentAlreadyExists);
@@ -45,7 +45,7 @@ Result<void> Manager::addAssessment(const std::string& code, const std::string& 
 Result<void> Manager::removeAssessment(const std::string& code, const std::string& name)
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   if (_courses[code].removeAssessment(name) != 0)
     return fail(Error::AssessmentNotFound);
@@ -56,7 +56,7 @@ Result<void> Manager::removeAssessment(const std::string& code, const std::strin
 Result<std::string> Manager::updateGrade(const std::string& code, const std::string& name, const std::string& grade)
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   return _courses[code].updateGrade(name, grade);
 }
@@ -64,7 +64,7 @@ Result<std::string> Manager::updateGrade(const std::string& code, const std::str
 Result<double> Manager::getPercentage(const std::string& code, const std::string& name) const
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   return _courses.at(code).getPercentage(name);
 }
@@ -72,7 +72,7 @@ Result<double> Manager::getPercentage(const std::string& code, const std::string
 Result<std::string> Manager::getScore(const std::string& code, const std::string& name) const
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   return _courses.at(code).getScore(name);
 }
@@ -80,7 +80,7 @@ Result<std::string> Manager::getScore(const std::string& code, const std::string
 Result<double> Manager::getCurrentGrade(const std::string& code) const
 {
   if (not _courses.contains(code))
-    return fail(Error::ClassNotFound);
+    return fail(Error::CourseNotFound);
 
   return Calculate::currentGrade(_courses.at(code));
 }

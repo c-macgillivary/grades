@@ -5,8 +5,8 @@
 
 enum class Error
 {
-  ClassNotFound,
-  ClassAlreadyExists,
+  CourseNotFound,
+  CourseAlreadyExists,
   
   AssessmentNotFound,
   AssessmentAlreadyExists,
