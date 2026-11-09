@@ -52,6 +52,7 @@ target_include_directories(core PUBLIC include)
 add_executable(grades
     src/cli/main.cpp
     src/cli/Commands.cpp
+    src/cli/Callbacks.cpp
 )
 
 target_link_libraries(grades

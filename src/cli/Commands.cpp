@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "cli/Callbacks.hpp"
 #include "cli/Commands.hpp"
 
 void registerCourseCommands(CLI::App& app, Manager& manager)
@@ -15,31 +16,20 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
   static std::string code = "";
   course_add->add_option("<course_code>", code, "Code of the course to be added")->required();
   course_add->callback([&]()
-                       {
-                        if (!manager.addCourse(code))
-                          std::cout << "Could not add course " << code << std::endl;
-                        else
-                          std::cout << "Successfully added course " << code << std::endl; });
+                       { addCourseCallback(manager, code); });
 
   // course remove subcommand
   auto course_remove = course_cmd->add_subcommand("remove", "Remove courses");
   course_remove->alias("r");
   course_remove->add_option("<course_code>", code, "Code of the course to be removed")->required();
   course_remove->callback([&]()
-                          {
-                            if (!manager.removeCourse(code))
-                              std::cout << "Could not remove course " << code << std::endl;
-                            else
-                              std::cout << "Successfully removed course " << code << std::endl; });
+                          { removeCourseCallback(manager, code); });
 
   // course list subcommand
   auto course_list = course_cmd->add_subcommand("list", "List courses");
   course_list->alias("l");
   course_list->callback([&]()
-                        {
-                         auto courses = manager.getCourses();
-                         for (auto& [code, c] : courses)
-                           std::cout << code << std::endl; });
+                        { listCoursesCallback(manager); });
 }
 
 void registerAssessmentCommands(CLI::App& app, Manager& manager)
@@ -62,11 +52,7 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_add->add_option("<weight>", weight, "Weight of the assessment towards the final grade\nInput either as a percentage of final grade (83.7) or points (25.5/30)")->required();
   assessments_add->add_option("grade", grade, "Grade achieved, either as a percentage (83.7) or points (25.5/30)");
   assessments_add->callback([&]()
-                            {
-                              if (!manager.addAssessment(code, name, weight, grade))
-                                std::cout << "Could not add assessment " << name << " to " << code << std::endl;
-                              else
-                                std::cout << "Successfully added assessment " << name << " to " << code << std::endl; });
+                            { addAssessmentCallback(manager, code, name, weight, grade); });
 
   // assessment remove subcommand
   auto assessments_remove = assessments_cmd->add_subcommand("remove", "Remove assessments");
@@ -74,11 +60,7 @@ void registerAssessmentCommands(CLI::App& app, Manager& manager)
   assessments_remove->add_option("<course_code>", code, "Code of the course with the assessment")->required();
   assessments_remove->add_option("<assessment_name>", name, "Name of the assessment to be removed")->required();
   assessments_remove->callback([&]()
-                               {
-                                if (!manager.removeAssessment(code, name))
-                                  std::cout << "Could not remove assessment " << name << " to " << code << std::endl;
-                                else
-                                  std::cout << "Successfully removed assessment " << name << " to " << code << std::endl; });
+                               { removeAssessmentCallback(manager, code, name); });
 }
 
 void registerGradeCommands(CLI::App& app, Manager& manager)
@@ -99,21 +81,7 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   grade_update->add_option("<assessment_name>", name, "The assessment's grade to be updated")->required();
   grade_update->add_option("<new_grade>", grade, "The new grade on the assessment")->required();
   grade_update->callback([&]()
-                         {
-                          auto ret = manager.updateGrade(code, name, grade);
-                          if (!ret)
-                          {
-                            std::cout << "Could not update grade for assessment " << name << " in " << code << std::endl;
-                            return;
-                          }
-                          if (grade.find("/") == std::string::npos and
-                              grade.find("%") == std::string::npos) // If the input was given in percent without "%"
-                            grade += "%";
-                          if (*ret == "new") // first time a grade is being set
-                            std::cout << "Added grade " << grade << " to assessment " << name << " in " << code << std::endl;
-                          else
-                            std::cout << "Grade for " << name << " in " << code <<
-                                         " updated from " << *ret << " to " << grade << std::endl; });
+                         { updateGradeCallback(manager, code, name, grade); });
 
   // grade show subcommand
   auto grade_show = grade_cmd->add_subcommand("show", "Show course/assessment grades");
@@ -130,49 +98,7 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   grade_show->add_option("assessment_name", name, "The assessment's grade to be shown. Leave blank to show course grade");
   grade_show->add_flag("-e,--exact", showExact, "Show exact grade (no rounding)")->excludes("assessment_name", "-s");
   grade_show->callback([&]()
-                       {
-                        if (name != "")
-                        {
-                          if (showScore)
-                          {
-                            auto score = manager.getScore(code, name);
-                            if (!score)
-                            {
-                              std::cout << "Could not show grade for assessment " << name << " in " << code << std::endl;
-                              return;
-                            }
-                            if (*score != "")
-                              std::cout << "Grade for " << name << " in " << code << " is " << *score << std::endl;
-                            else
-                              std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
-                              }
-                          else
-                          {
-                            auto percent = manager.getPercentage(code, name);
-                            if (!percent)
-                            {
-                              std::cout << "Could not show grade for assessment " << name << " in " << code << std::endl;
-                              return;
-                            }
-                            if (*percent >= 0)
-                              std::cout << "Grade for " << name << " in " << code << " is " << *percent << "%" << std::endl;
-                            else 
-                              std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
-                          }
-                        }
-                        else
-                        {
-                          auto grade = manager.getCurrentGrade(code);
-                          if (!grade)
-                          {
-                            std::cout << "Could not show grade for " << code << std::endl;
-                            return;
-                          }
-                          if (not showExact)
-                            *grade = round(*grade);
-                          if (*grade >= 0)
-                            std::cout << "Current grade in " << code << " is " << *grade << "%" << std::endl;
-                        } });
+                       { showGradeCallback(manager, showScore, showPercent, showExact, code, name); });
 }
 
 void registerCommands(CLI::App& app, Manager& manager)
@@ -184,20 +110,11 @@ void registerCommands(CLI::App& app, Manager& manager)
   auto dump = app.add_subcommand("dump", "DEBUG: Dump all saved data to the screen");
   dump->alias("d");
   dump->require_subcommand(0);
-
   dump->callback([&]()
-                 { std::cout << manager.dump() << '\n'; });
+                 { dumpCallback(manager); });
 
   auto clean = app.add_subcommand("clean", "WARNING !!! REMOVES ALL STORED DATA !!! WARNING");
   clean->require_subcommand(0);
   clean->callback([&]()
-                  {
-                    std::cout << "This will delete ALL stored data. Are you sure? Type \"clean\" to confirm: ";
-                    std::string input = "";
-                    std::getline(std::cin, input);
-                    if (input == "clean")
-                    {
-                      manager.clean();
-                      std::cout << "Successfully deleted ALL stored data at " << manager.getPath() << std::endl;
-                    } });
+                  { cleanCallback(manager); });
 }
