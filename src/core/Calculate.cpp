@@ -11,7 +11,10 @@ double currentGrade(const Course& course)
 
   for (auto [name, a] : assessments)
   {
-    achievedScore += a.getPercentage() * a.getExactWeight() / 100.0;
+    auto percent = a.getPercentage();
+    if (percent < 0)
+      continue;
+    achievedScore += percent * a.getExactWeight() / 100.0;
     assessedWeight += a.getExactWeight() / 100.0;
   }
 
