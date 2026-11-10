@@ -3,6 +3,7 @@
 
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <utility>
 
 #include "core/Error.hpp"
 
@@ -35,6 +36,11 @@ public:
   double percentage() const
   {
     return _part / _total;
+  }
+
+  std::pair<double, double> pair() const
+  {
+    return { _part, _total};
   }
 
   friend void to_json(nlohmann::json& j, const Grade& g);
