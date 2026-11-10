@@ -14,7 +14,6 @@ private:
   bool _clean = false;
 
 public:
-  Manager();
 
   Result<void> addCourse(const std::string& code);
   Result<void> removeCourse(const std::string& code);

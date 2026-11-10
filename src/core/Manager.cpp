@@ -6,11 +6,6 @@
 #include "core/Error.hpp"
 #include "core/Manager.hpp"
 
-Manager::Manager()
-{
-  load();
-}
-
 Result<void> Manager::addCourse(const std::string& code)
 {
   if (_courses.contains(code))
