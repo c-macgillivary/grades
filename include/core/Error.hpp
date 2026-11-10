@@ -7,11 +7,13 @@ enum class Error
 {
   CourseNotFound,
   CourseAlreadyExists,
-  
+
   AssessmentNotFound,
   AssessmentAlreadyExists,
 
-  CouldNotSaveDataToFile
+  CouldNotSaveDataToFile,
+
+  InvalidGrade
 };
 
 template <typename T>
@@ -19,7 +21,7 @@ using Result = std::expected<T, Error>;
 
 inline std::unexpected<Error> fail(Error e)
 {
-    return std::unexpected<Error>(e);
+  return std::unexpected<Error>(e);
 }
 
 #endif // !ERROR_HPP

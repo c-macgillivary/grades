@@ -29,6 +29,7 @@ add_library(core STATIC
   src/core/Manager.cpp
   src/core/Assessment.cpp
   src/core/Calculate.cpp
+  src/core/Grade.cpp
 )
 
 # Set json as system include to suppress warnings
