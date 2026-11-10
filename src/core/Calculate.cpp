@@ -17,7 +17,7 @@ Result<OptionalGrade> currentGrade(const Course& course)
     if (!grade)
       continue;
 
-    achievedScore += grade->percentage();
+    achievedScore += grade->ratio();
 
     Weight weight = a.getWeight();
 

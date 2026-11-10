@@ -33,7 +33,7 @@ public:
     return _total;
   }
 
-  double percentage() const
+  double ratio() const
   {
     return _part / _total;
   }
