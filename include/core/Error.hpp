@@ -13,7 +13,8 @@ enum class Error
 
   CouldNotSaveDataToFile,
 
-  InvalidGrade
+  InvalidGrade,
+  InvalidWeight
 };
 
 template <typename T>
