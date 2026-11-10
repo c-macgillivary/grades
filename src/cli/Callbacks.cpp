@@ -1,7 +1,36 @@
 #include <iostream>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "cli/ErrorHandling.hpp"
+#include "core/Grade.hpp"
 #include "core/Manager.hpp"
+
+std::pair<double, double> parseInput(const std::string& input)
+{
+  size_t pos = input.find("/");
+
+  // If a percentage was given
+  if (pos == std::string::npos)
+    return { std::stod(input), 100.0};
+  else
+    return { std::stod(input.substr(0,pos)), std::stod(input.substr(pos + 1)) };
+}
+
+std::string gradeToPercent(const Grade& grade, bool exact = false)
+{
+  double percent = grade.ratio() * 100;
+  if (not exact)
+    percent = round(percent);
+  return std::format("{}", percent) + "%";
+}
+
+std::string gradeToScore(const Grade& grade)
+{
+  auto [part, total] = grade.pair();
+  return std::format("{}/{}", part, total);
+}
 
 void addCourseCallback(Manager& manager, const std::string& code)
 {
@@ -28,9 +57,27 @@ void listCoursesCallback(Manager& manager)
     std::cout << code << std::endl;
 }
 
-void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weight, const std::string& grade)
+void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weightInput, const std::string& gradeInput)
 {
-  auto result = manager.addAssessment(code, name, weight, grade);
+  auto weight = Weight::create(parseInput(weightInput));
+
+  if (!weight)
+    // handleInvalidWeightError(weight);
+    return;
+
+  OptionalGrade grade = std::nullopt;
+
+  if (gradeInput != "") // if the user inputted a grade
+  {
+    auto gradeResult = Grade::create(parseInput(gradeInput));
+
+    if (!gradeResult)
+      // handleInvalidGradeError(gradeResult);
+      return;
+  }
+
+  auto result = manager.addAssessment(code, name, *weight, *grade);
+
   if (!result)
     handleAddAssessmentError(result, code, name);
   else
@@ -46,25 +93,28 @@ void removeAssessmentCallback(Manager& manager, const std::string& code, const s
     std::cout << "Successfully removed assessment " << name << " to " << code << std::endl;
 }
 
-void updateGradeCallback(Manager& manager, const std::string& code, const std::string& name, std::string grade)
+void updateGradeCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& gradeInput)
 {
-  auto result = manager.updateGrade(code, name, grade);
-  if (!result)
+  auto grade = Grade::create(parseInput(gradeInput));
+
+  if (!grade)
+    // handleInvalidGradeError(grade);
+    return;
+
+  auto oldGrade = manager.updateGrade(code, name, *grade);
+  if (!oldGrade)
   {
-    handleUpdateGradeError(result, code, name);
+    handleUpdateGradeError(oldGrade, code, name);
     return;
   }
 
-  if (grade.find("/") == std::string::npos and
-      grade.find("%") == std::string::npos) // If the input was given in percent without "%"
-    grade += "%";
-  if (*result == "new") // first time a grade is being set
-    std::cout << "Added grade " << grade << " to assessment " << name << " in " << code << std::endl;
+  if (*oldGrade == std::nullopt)
+    std::cout << "Added grade " << gradeToPercent(*grade) << " to assessment " << name << " in " << code << std::endl;
   else
-    std::cout << "Grade for " << name << " in " << code << " updated from " << *result << " to " << grade << std::endl;
+    std::cout << "Grade for " << name << " in " << code << " updated from " << gradeToPercent(**oldGrade) << " to " << gradeToPercent(*grade) << std::endl;
 }
 
-void showGradeCallback(Manager& manager, bool showScore, bool showPercent, bool showExact, const std::string& code, const std::string& name)
+void showGradeCallback(Manager& manager, bool showScore, bool showExact, const std::string& code, const std::string& name)
 {
   if (name == "") // If no assessment name was given, show the grade in the given course
   {
@@ -75,40 +125,38 @@ void showGradeCallback(Manager& manager, bool showScore, bool showPercent, bool 
       return;
     }
 
-    if (not showExact)
-      *result = round(*result);
+    if (*result == std::nullopt)
+      std::cout << "Cannot calulate grade. No marks have been entered for " << code << std::endl;
 
-    std::cout << "Current grade in " << code << " is " << *result << "%" << std::endl;
+    double grade = (**result).ratio();
+
+    if (not showExact)
+      grade = round(grade);
+
+    std::cout << "Current grade in " << code << " is " << grade << "%" << std::endl;
   }
   else
   {
-    if (showScore)
-    {
-      auto result = manager.getScore(code, name);
-      if (!result)
-      {
-        handleShowAssessmentGradeError(result, code, name);
-        return;
-      }
+    auto gradeResult = manager.getGrade(code, name);
 
-      if (*result != "")
-        std::cout << "Grade for " << name << " in " << code << " is " << *result << std::endl;
-      else
-        std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
-    }
-    else if (showPercent)
+    if (!gradeResult)
+      //handleShowAssessmentGradeError(gradeResult, code, name);
+      return;
+
+    if (*gradeResult == std::nullopt)
     {
-      auto result = manager.getPercentage(code, name);
-      if (!result)
-      {
-        handleShowAssessmentGradeError(result, code, name);
-        return;
-      }
-      if (*result >= 0)
-        std::cout << "Grade for " << name << " in " << code << " is " << *result << "%" << std::endl;
-      else
-        std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+      std::cout << "Assessment " << name << " in " << code << " has not been completed" << std::endl;
+      return;
     }
+
+    std::string grade;
+
+    if (showScore)
+      grade = gradeToScore(**gradeResult);
+    else
+      grade = gradeToPercent(**gradeResult);
+
+    std::cout << "Grade for " << name << " in " << code << " is " << grade << "%" << std::endl;
   }
 }
 

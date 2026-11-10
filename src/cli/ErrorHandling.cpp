@@ -3,6 +3,7 @@
 
 #include "cli/ErrorHandling.hpp"
 #include "core/Error.hpp"
+#include "core/Grade.hpp"
 
 void printErrorMessage(const Error& error, const std::string& context)
 {
@@ -87,7 +88,7 @@ void handleRemoveAssessmentError(const Result<void>& result, const std::string& 
   printErrorMessage(result.error(), context);
 }
 
-void handleUpdateGradeError(const Result<std::string>& result, const std::string& code, const std::string& name)
+void handleUpdateGradeError(const Result<OptionalGrade>& result, const std::string& code, const std::string& name)
 {
   assert(!result);
 
@@ -110,10 +111,33 @@ void handleUpdateGradeError(const Result<std::string>& result, const std::string
   printErrorMessage(result.error(), context);
 }
 
-void handleShowCourseGradeError(const Result<double>& result, const std::string& code)
+void handleShowCourseGradeError(const Result<OptionalGrade>& result, const std::string& code)
 {
   assert(!result);
 
   std::cout << "Could not show current grade in " << code << std::endl;
   printErrorMessage(result.error(), code);
+}
+
+void handleShowAssessmentGradeError(const Result<Grade>& result, const std::string& code, const std::string& name)
+{
+  assert(!result);
+
+  std::cout << "Could not show grade for " << name << " in " << code << std::endl;
+  std::string context = "";
+
+  switch (result.error())
+  {
+  case Error::AssessmentNotFound:
+    context = name;
+    break;
+  case Error::CourseNotFound:
+    context = code;
+    break;
+  default:
+    assert(false && "Unexpected error returned by Manager::getGrade()");
+    break;
+  }
+
+  printErrorMessage(result.error(), context);
 }

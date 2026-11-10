@@ -86,19 +86,16 @@ void registerGradeCommands(CLI::App& app, Manager& manager)
   // grade show subcommand
   auto grade_show = grade_cmd->add_subcommand("show", "Show course/assessment grades");
   static bool showScore = false;
-  static bool showPercent = true; // default true
   static bool showExact = false;
 
   grade_show->alias("s");
   auto scoreFlag = grade_show->add_flag("-s,--score", showScore, "Show assessment grade as a score out of X points");
-  grade_show->add_flag("-p,--percent,--percentage", showPercent, "Show grade as a percentage (default)")->excludes("-s");
-  scoreFlag->excludes("-p");
   grade_show->get_formatter()->column_width(35);
   grade_show->add_option("<course_code>", code, "The course the grade is in")->required();
   grade_show->add_option("assessment_name", name, "The assessment's grade to be shown. Leave blank to show course grade");
   grade_show->add_flag("-e,--exact", showExact, "Show exact grade (no rounding)")->excludes("assessment_name", "-s");
   grade_show->callback([&]()
-                       { showGradeCallback(manager, showScore, showPercent, showExact, code, name); });
+                       { showGradeCallback(manager, showScore, showExact, code, name); });
 }
 
 void registerCommands(CLI::App& app, Manager& manager)

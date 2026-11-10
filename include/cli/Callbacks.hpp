@@ -9,11 +9,11 @@ void addCourseCallback(Manager& manager, const std::string& code);
 void removeCourseCallback(Manager& manager, const std::string& code);
 void listCoursesCallback(Manager& manager);
 
-void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weight, const std::string& grade);
+void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weightInput, const std::string& gradeInput);
 void removeAssessmentCallback(Manager& manager, const std::string& code, const std::string& name);
 
-void updateGradeCallback(Manager& manager, const std::string& code, const std::string& name, std::string grade);
-void showGradeCallback(Manager& manager, bool showScore, bool showPercent, bool showExact, const std::string& code, const std::string& name);
+void updateGradeCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& gradeInput);
+void showGradeCallback(Manager& manager, bool showScore, bool showExact, const std::string& code, const std::string& name);
 
 void dumpCallback(Manager& manager);
 void cleanCallback(Manager& manager);
