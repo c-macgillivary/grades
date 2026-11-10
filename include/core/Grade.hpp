@@ -2,6 +2,7 @@
 #define GRADE_HPP
 
 #include <nlohmann/json.hpp>
+#include <optional>
 
 #include "core/Error.hpp"
 
@@ -37,6 +38,8 @@ public:
 
   friend void to_json(nlohmann::json& j, const Grade& g);
 };
+
+using OptionalGrade = std::optional<Grade>;
 
 Result<Grade> gradeFromJson(const nlohmann::json& j);
 
