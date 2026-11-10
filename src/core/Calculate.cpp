@@ -1,8 +1,10 @@
 #include "core/Calculate.hpp"
+#include "core/Grade.hpp"
 
 namespace Calculate
 {
-double currentGrade(const Course& course)
+
+Result<OptionalGrade> currentGrade(const Course& course)
 {
   const std::unordered_map<std::string, Assessment>& assessments = course.getAssessments();
 
@@ -11,13 +13,22 @@ double currentGrade(const Course& course)
 
   for (auto [name, a] : assessments)
   {
-    auto percent = a.getPercentage();
-    if (percent < 0)
+    auto grade = a.getGrade();
+    if (!grade)
       continue;
-    achievedScore += percent * a.getExactWeight() / 100.0;
-    assessedWeight += a.getExactWeight() / 100.0;
+
+    achievedScore += grade->percentage();
+
+    Weight weight = a.getWeight();
+
+    assessedWeight += weight.value();
   }
 
-  return achievedScore / assessedWeight;
+  auto current = Grade::create(achievedScore, assessedWeight);
+  if (!current)
+    return fail(Error::InvalidCurrentGrade);
+
+  return current;
 }
+
 }; // namespace Calculate

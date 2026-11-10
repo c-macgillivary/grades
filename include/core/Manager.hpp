@@ -6,6 +6,7 @@
 #include "core/Config.hpp"
 #include "core/Course.hpp"
 #include "core/Error.hpp"
+#include "core/Grade.hpp"
 
 class Manager
 {
@@ -18,13 +19,12 @@ public:
   Result<void> addCourse(const std::string& code);
   Result<void> removeCourse(const std::string& code);
 
-  Result<void> addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade = "");
+  Result<void> addAssessment(const std::string& code, const std::string& name, const Weight& weight, const OptionalGrade& grade);
   Result<void> removeAssessment(const std::string& code, const std::string& name);
 
-  Result<std::string> updateGrade(const std::string& code, const std::string& name, const std::string& grade);
-  Result<double> getPercentage(const std::string& code, const std::string& name) const;
-  Result<std::string> getScore(const std::string& code, const std::string& name) const;
-  Result<double> getCurrentGrade(const std::string& code) const;
+  Result<OptionalGrade> updateGrade(const std::string& code, const std::string& name, const Grade& grade);
+  Result<OptionalGrade> getGrade(const std::string& code, const std::string& name) const;
+  Result<OptionalGrade> getCurrentGrade(const std::string& code) const;
 
   std::string dump() const;
   void clean();
@@ -41,7 +41,7 @@ public:
 
   Result<void> save();
 
-  void load();
+  Result<void> load();
 };
 
 #endif // !MANAGER_HPP

@@ -4,49 +4,40 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-std::pair<double, double> parseValue(const std::string& input);
-std::string unparseValue(double score, double total, bool usePercent = false);
+#include "core/Grade.hpp"
+#include "core/Weight.hpp"
 
 class Assessment
 {
 private:
   std::string _name = "";
-  double _totalWeight = 1;
-  double _partWeight = 0.0;
-  int _total = -1;
-  double _score = -1;
+  OptionalGrade _grade;
+  Weight _weight;
 
 public:
-  Assessment() = default;
-  Assessment(const std::string& name, const std::string& weight, const std::string& grade);
+  Assessment(const std::string& name, const Weight& weight, const OptionalGrade& grade);
 
-  double getPercentage() const
+  const std::string& getName() const
   {
-    if (_total <= 0 or _score < 0)
-      return -1;
-    return _score / _total * 100.0;
+    return _name;
   }
 
-  std::string getScore() const
+  const OptionalGrade& getGrade() const
   {
-    return unparseValue(_score, _total);
+    return _grade;
   }
 
-  double getExactWeight() const
+  const Weight& getWeight() const
   {
-    return _partWeight / _totalWeight * 100.0;
-  }
-
-  std::string getWeight() const
-  {
-    return unparseValue(_partWeight, _totalWeight);
+    return _weight;
   }
 
   // Returns the previous value of the grade
-  std::string setGrade(const std::string& grade);
+  OptionalGrade setGrade(const Grade& grade);
 
   friend void to_json(nlohmann::json& j, const Assessment& a);
-  friend void from_json(const nlohmann::json& j, Assessment& a);
 };
+
+Result<Assessment> assessmentFromJson(const nlohmann::json& j);
 
 #endif // !ASSESSMENT_HPP

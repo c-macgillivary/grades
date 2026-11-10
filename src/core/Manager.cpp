@@ -11,7 +11,7 @@ Result<void> Manager::addCourse(const std::string& code)
   if (_courses.contains(code))
     return fail(Error::CourseAlreadyExists);
 
-  _courses[code] = Course(code);
+  _courses.emplace(code, code);
 
   return {};
 }
@@ -26,12 +26,12 @@ Result<void> Manager::removeCourse(const std::string& code)
   return {};
 }
 
-Result<void> Manager::addAssessment(const std::string& code, const std::string& name, const std::string& weight, const std::string& grade)
+Result<void> Manager::addAssessment(const std::string& code, const std::string& name, const Weight& weight, const OptionalGrade& grade)
 {
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
 
-  return _courses[code].addAssessment(name,weight,grade);
+  return _courses.at(code).addAssessment(name, weight, grade);
 }
 
 Result<void> Manager::removeAssessment(const std::string& code, const std::string& name)
@@ -39,34 +39,26 @@ Result<void> Manager::removeAssessment(const std::string& code, const std::strin
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
 
-  return _courses[code].removeAssessment(name);
+  return _courses.at(code).removeAssessment(name);
 }
 
-Result<std::string> Manager::updateGrade(const std::string& code, const std::string& name, const std::string& grade)
+Result<OptionalGrade> Manager::updateGrade(const std::string& code, const std::string& name, const Grade& grade)
 {
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
 
-  return _courses[code].updateGrade(name, grade);
+  return _courses.at(code).updateGrade(name, grade);
 }
 
-Result<double> Manager::getPercentage(const std::string& code, const std::string& name) const
+Result<OptionalGrade> Manager::getGrade(const std::string& code, const std::string& name) const
 {
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
 
-  return _courses.at(code).getPercentage(name);
+  return _courses.at(code).getGrade(name);
 }
 
-Result<std::string> Manager::getScore(const std::string& code, const std::string& name) const
-{
-  if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
-
-  return _courses.at(code).getScore(name);
-}
-
-Result<double> Manager::getCurrentGrade(const std::string& code) const
+Result<OptionalGrade> Manager::getCurrentGrade(const std::string& code) const
 {
   if (not _courses.contains(code))
     return fail(Error::CourseNotFound);
@@ -103,15 +95,25 @@ Result<void> Manager::save()
   return {};
 }
 
-void Manager::load()
+Result<void> Manager::load()
 {
   std::ifstream file(Config::DATA_DIR / "courses.json");
 
   if (!file.is_open())
-    return;
+    return {};
 
   nlohmann::json data;
   file >> data;
 
-  data.get_to(_courses);
+  for (const auto& [code, courseJson] : data.items())
+  {
+    auto course = courseFromJson(courseJson);
+
+    if (!course)
+      return fail(course.error());
+
+    _courses.emplace(code, *course);
+  }
+
+  return {};
 }

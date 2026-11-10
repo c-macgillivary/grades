@@ -14,7 +14,10 @@ enum class Error
   CouldNotSaveDataToFile,
 
   InvalidGrade,
-  InvalidWeight
+  InvalidCurrentGrade,
+  InvalidWeight,
+
+  DuplicateAssessmentInJSON
 };
 
 template <typename T>

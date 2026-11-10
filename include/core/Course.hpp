@@ -3,6 +3,7 @@
 
 #include "core/Assessment.hpp"
 #include "core/Error.hpp"
+#include "core/Grade.hpp"
 
 class Course
 {
@@ -11,7 +12,6 @@ private:
   std::string _code;
 
 public:
-  Course() = default;
   explicit Course(const std::string& code);
 
   const std::string& getCode() const
@@ -24,16 +24,16 @@ public:
     return _assessments;
   }
 
-  Result<double> getPercentage(const std::string& name) const;
-  Result<std::string> getScore(const std::string& name) const;
+  Result<OptionalGrade> getGrade(const std::string& name) const;
+  Result<OptionalGrade> updateGrade(const std::string& name, const Grade& grade);
 
-  Result<void> addAssessment(const std::string& name, const std::string& weight, const std::string& grade = "");
+  Result<void> addAssessment(const Assessment& a);
+  Result<void> addAssessment(const std::string& name, const Weight& weight, const OptionalGrade& grade);
   Result<void> removeAssessment(const std::string& name);
 
-  Result<std::string> updateGrade(const std::string& name, const std::string& grade);
-
   friend void to_json(nlohmann::json& j, const Course& c);
-  friend void from_json(const nlohmann::json& j, Course& c);
 };
+
+Result<Course> courseFromJson(const nlohmann::json& j);
 
 #endif // !COURSE_HPP
