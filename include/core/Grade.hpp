@@ -20,6 +20,7 @@ private:
 
 public:
   static Result<Grade> create(double part, double total);
+  static Result<Grade> create(std::pair<double, double> ratio);
 
   double numerator() const
   {

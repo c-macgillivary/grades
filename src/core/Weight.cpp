@@ -11,6 +11,14 @@ Result<Weight> Weight::create(double part, double total)
   return Weight(part, total);
 }
 
+Result<Weight> Weight::create(std::pair<double, double> ratio)
+{
+  if (ratio.first < 0 or ratio.second <= 0)
+    return fail(Error::InvalidWeight);
+
+  return Weight(ratio.first, ratio.second);
+}
+
 void to_json(nlohmann::json& j, const Weight& g)
 {
   j = {

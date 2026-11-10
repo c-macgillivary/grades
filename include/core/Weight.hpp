@@ -19,6 +19,7 @@ private:
 
 public:
   static Result<Weight> create(double part, double total);
+  static Result<Weight> create(std::pair<double, double> ratio);
 
   double numerator() const
   {
