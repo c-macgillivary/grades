@@ -28,6 +28,9 @@ Result<OptionalGrade> currentGrade(const Course& course)
   if (!current)
     return fail(Error::InvalidCurrentGrade);
 
+  if (assessedWeight == 0.0) // If no assessments have been graded
+    return std::nullopt;
+
   return current;
 }
 
