@@ -74,6 +74,8 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
     if (!gradeResult)
       // handleInvalidGradeError(gradeResult);
       return;
+
+    grade = *gradeResult;
   }
 
   auto result = manager.addAssessment(code, name, *weight, *grade);
