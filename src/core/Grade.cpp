@@ -19,16 +19,21 @@ Result<Grade> Grade::create(std::pair<double, double> ratio)
   return Grade(ratio.first, ratio.second);
 }
 
-void to_json(nlohmann::json& j, const Grade& g)
+void to_json(nlohmann::json& j, const OptionalGrade& g)
 {
-  j = {
-    { "part", g._part },
-    { "total", g._total }
-  };
+  if (g)
+    j = {
+      { "part", g->_part },
+      { "total", g->_total }
+    };
+  else
+    j = nullptr;
 }
 
-Result<Grade> gradeFromJson(const nlohmann::json& j)
+Result<OptionalGrade> gradeFromJson(const nlohmann::json& j)
 {
+  if (j.is_null())
+    return OptionalGrade{};
   return Grade::create(
       j.at("part").get<double>(),
       j.at("total").get<double>());

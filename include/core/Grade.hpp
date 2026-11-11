@@ -7,6 +7,10 @@
 
 #include "core/Error.hpp"
 
+class Grade;
+
+using OptionalGrade = std::optional<Grade>;
+
 class Grade
 {
 private:
@@ -43,11 +47,9 @@ public:
     return { _part, _total};
   }
 
-  friend void to_json(nlohmann::json& j, const Grade& g);
+  friend void to_json(nlohmann::json& j, const OptionalGrade& g);
 };
 
-using OptionalGrade = std::optional<Grade>;
-
-Result<Grade> gradeFromJson(const nlohmann::json& j);
+Result<OptionalGrade> gradeFromJson(const nlohmann::json& j);
 
 #endif // !GRADE_HPP
