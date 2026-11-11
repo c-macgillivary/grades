@@ -78,7 +78,7 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
     grade = *gradeResult;
   }
 
-  auto result = manager.addAssessment(code, name, *weight, *grade);
+  auto result = manager.addAssessment(code, name, *weight, grade);
 
   if (!result)
     handleAddAssessmentError(result, code, name);
