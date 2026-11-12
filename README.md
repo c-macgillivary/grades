@@ -1,4 +1,5 @@
 # Grades Tracker
+[![Build](https://github.com/c-macgillivary/grades/actions/workflows/cmake-ubuntu-build.yaml/badge.svg)](https://github.com/c-macgillivary/grades/actions/workflows/cmake-ubuntu-build.yaml)
 This is a project meant to track grades in a given course.
 Functionality is being added daily.
 Planned features include:
