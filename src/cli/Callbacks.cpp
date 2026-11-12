@@ -53,8 +53,11 @@ void removeCourseCallback(Manager& manager, const std::string& code)
 void listCoursesCallback(Manager& manager)
 {
   auto courses = manager.getCourses();
-  for (auto& [code, c] : courses)
-    std::cout << code << std::endl;
+  if (courses.empty())
+    std::cout << "There are no courses saved.\nAdd one with \"grades course add <course_name>\"" << std::endl;
+  else
+    for (auto& [code, c] : courses)
+      std::cout << code << std::endl;
 }
 
 void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weightInput, const std::string& gradeInput)
