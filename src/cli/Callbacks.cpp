@@ -13,9 +13,9 @@ std::pair<double, double> parseInput(const std::string& input)
 
   // If a percentage was given
   if (pos == std::string::npos)
-    return { std::stod(input), 100.0};
+    return { std::stod(input), 100.0 };
   else
-    return { std::stod(input.substr(0,pos)), std::stod(input.substr(pos + 1)) };
+    return { std::stod(input.substr(0, pos)), std::stod(input.substr(pos + 1)) };
 }
 
 std::string gradeToPercent(const Grade& grade, bool exact = false)
@@ -35,19 +35,25 @@ std::string gradeToScore(const Grade& grade)
 void addCourseCallback(Manager& manager, const std::string& code)
 {
   auto result = manager.addCourse(code);
-  if (!result)
-    handleAddCourseError(result, code);
-  else
+  if (result)
     std::cout << "Successfully added course " << code << std::endl;
+  else
+  {
+    std::cerr << "Could not add course " << code << std::endl;
+    printErrorMessage(result.error(), code);
+  }
 }
 
 void removeCourseCallback(Manager& manager, const std::string& code)
 {
   auto result = manager.removeCourse(code);
-  if (!result)
-    handleRemoveCourseError(result, code);
-  else
+  if (result)
     std::cout << "Successfully removed course " << code << std::endl;
+  else
+  {
+    std::cerr << "Could not remove course " << code << std::endl;
+    printErrorMessage(result.error(), code);
+  }
 }
 
 void listCoursesCallback(Manager& manager)
@@ -83,19 +89,54 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
 
   auto result = manager.addAssessment(code, name, *weight, grade);
 
-  if (!result)
-    handleAddAssessmentError(result, code, name);
-  else
+  if (result)
     std::cout << "Successfully added assessment " << name << " to " << code << std::endl;
+  else
+  {
+    std::cerr << "Could not add assessment " << name << " to " << code << std::endl;
+    std::string context = "";
+
+    switch (result.error())
+    {
+    case Error::AssessmentAlreadyExists:
+      context = name;
+      break;
+    case Error::CourseNotFound:
+      context = code;
+      break;
+    default:
+      assert(false && "Unexpected error returned by Manager::addAssessment()");
+      break;
+    }
+    printErrorMessage(result.error(), context);
+  }
 }
 
 void removeAssessmentCallback(Manager& manager, const std::string& code, const std::string& name)
 {
   auto result = manager.removeAssessment(code, name);
-  if (!result)
-    handleRemoveAssessmentError(result, code, name);
-  else
+  if (result)
     std::cout << "Successfully removed assessment " << name << " to " << code << std::endl;
+  else
+  {
+    std::cerr << "Could not remove assessment " << name << " from " << code << std::endl;
+    std::string context = "";
+
+    switch (result.error())
+    {
+    case Error::AssessmentNotFound:
+      context = name;
+      break;
+    case Error::CourseNotFound:
+      context = code;
+      break;
+    default:
+      assert(false && "Unexpected error returned by Manager::removeAssessment()");
+      break;
+    }
+
+    printErrorMessage(result.error(), context);
+  }
 }
 
 void updateGradeCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& gradeInput)
@@ -109,7 +150,23 @@ void updateGradeCallback(Manager& manager, const std::string& code, const std::s
   auto oldGrade = manager.updateGrade(code, name, *grade);
   if (!oldGrade)
   {
-    handleUpdateGradeError(oldGrade, code, name);
+    std::cerr << "Could not update grade for " << name << " in " << code << std::endl;
+    std::string context = "";
+
+    switch (oldGrade.error())
+    {
+    case Error::AssessmentNotFound:
+      context = name;
+      break;
+    case Error::CourseNotFound:
+      context = code;
+      break;
+    default:
+      assert(false && "Unexpected error returned by Manager::updateGrade()");
+      break;
+    }
+
+    printErrorMessage(oldGrade.error(), context);
     return;
   }
 
@@ -126,7 +183,8 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     auto result = manager.getCurrentGrade(code);
     if (!result)
     {
-      handleShowCourseGradeError(result, code);
+      std::cerr << "Could not show current grade in " << code << std::endl;
+      printErrorMessage(result.error(), code);
       return;
     }
 
@@ -145,7 +203,7 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     auto gradeResult = manager.getGrade(code, name);
 
     if (!gradeResult)
-      //handleShowAssessmentGradeError(gradeResult, code, name);
+      // handleShowAssessmentGradeError(gradeResult, code, name);
       return;
 
     if (*gradeResult == std::nullopt)

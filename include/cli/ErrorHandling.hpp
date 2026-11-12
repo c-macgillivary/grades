@@ -4,16 +4,7 @@
 #include <string>
 
 #include "core/Error.hpp"
-#include "core/Grade.hpp"
 
-void handleAddCourseError(const Result<void>& result, const std::string& code);
-void handleRemoveCourseError(const Result<void>& result, const std::string& code);
-
-void handleAddAssessmentError(const Result<void>& result, const std::string& code, const std::string& name);
-void handleRemoveAssessmentError(const Result<void>& result, const std::string& code, const std::string& name);
-
-void handleUpdateGradeError(const Result<OptionalGrade>& result, const std::string& code, const std::string& name);
-void handleShowCourseGradeError(const Result<OptionalGrade>& result, const std::string& code);
-void handleShowAssessmentGradeError(const Result<OptionalGrade>& result, const std::string& code, const std::string& name);
+void printErrorMessage(const Error& error, const std::string& context);
 
 #endif // !ERROR_HANDLING_HPP
