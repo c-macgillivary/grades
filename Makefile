@@ -11,13 +11,16 @@ build/.configured: $(CMAKE_FILES) CMakePresets.json
 	@touch $@
 
 debug: configure
-	cmake --build --preset debug
+	cmake --build --preset debug --parallel
 
 release: configure
-	cmake --build --preset release
+	cmake --build --preset release --parallel
 
 core: configure
-	cmake --build --preset debug --target core
+	cmake --build --preset debug --target core --parallel
+
+cli: configure
+	cmake --build --preset debug --target cli --parallel
 
 install: release
 	sudo cmake --install build --config release
