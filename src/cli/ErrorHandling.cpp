@@ -24,5 +24,16 @@ void printErrorMessage(const Error& error, const std::string& context)
   case Error::CouldNotSaveDataToFile:
     std::cerr << "Could not open file " << context << " for writing" << std::endl;
     break;
+  case Error::InvalidWeight:
+    std::cerr << "Invalid weight: " << context << std::endl;
+    break;
+  case Error::InvalidGrade:
+    std::cerr << "Invalid grade: " << context << std::endl;
+    break;
+  case Error::InvalidCurrentGrade:
+    std::cerr << "Invalid current grade: " << context << std::endl;
+    break;
+  case Error::DuplicateAssessmentInJSON:
+    std::cerr << "Invalid save file. Duplicate assessment " << context << std::endl; 
   }
 }
