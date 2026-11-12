@@ -87,7 +87,7 @@ void Manager::clean()
   _clean = true;
 }
 
-Result<void> Manager::save()
+Result<void> Manager::save() const
 {
   if (_clean) // Do not save if the user just cleaned the data
     return {};

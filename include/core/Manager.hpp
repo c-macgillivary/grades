@@ -39,7 +39,7 @@ public:
     return Config::DATA_DIR.string() + "/courses.json";
   }
 
-  Result<void> save();
+  Result<void> save() const;
 
   Result<void> load();
 };
