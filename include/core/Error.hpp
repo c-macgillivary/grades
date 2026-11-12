@@ -17,7 +17,8 @@ enum class Error
   InvalidCurrentGrade,
   InvalidWeight,
 
-  DuplicateAssessmentInJSON
+  DuplicateAssessmentInJSON,
+  DuplicateCourseInJSON
 };
 
 template <typename T>

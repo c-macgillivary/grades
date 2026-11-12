@@ -121,7 +121,8 @@ Result<void> Manager::load()
     if (!course)
       return fail(course.error());
 
-    _courses.emplace(code, *course);
+    if (!addCourse(*course))
+      return fail(Error::DuplicateCourseInJSON);
   }
 
   return {};
