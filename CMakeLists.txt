@@ -56,6 +56,7 @@ add_executable(grades
     src/cli/Commands.cpp
     src/cli/Callbacks.cpp
     src/cli/ErrorHandling.cpp
+    src/cli/Persistance.cpp
 )
 
 target_link_libraries(grades

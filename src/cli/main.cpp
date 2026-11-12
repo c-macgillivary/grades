@@ -1,32 +1,23 @@
 #include <CLI/App.hpp>
-#include <iostream>
 
 #include "cli/Commands.hpp"
+#include "cli/Persistance.hpp"
 #include "core/Manager.hpp"
 
 int main(int argc, char** argv)
 {
   CLI::App app{ "A tracker for grades" };
   Manager manager;
+  
+  load(manager);
 
-  bool loaded = true;
-  if (!manager.load()) // TODO manage an error here
-  {
-    loaded = false;
-    std::cerr << "failed to load" << std::endl;
-  }
   argv = app.ensure_utf8(argv);
 
   registerCommands(app, manager);
 
   CLI11_PARSE(app, argc, argv);
 
-  auto saveStatus = Result<void>();
-  if (loaded) // Don't overwrite the save if it wasn't loaded properly
-    saveStatus = manager.save();
-
-  if (!saveStatus)
-    std::cerr << "Could not save changes to file" << std::endl;
+  save(manager);
 
   return 0;
 }
