@@ -35,5 +35,9 @@ void printErrorMessage(const Error& error, const std::string& context)
     break;
   case Error::DuplicateAssessmentInJSON:
     std::cerr << "Invalid save file. Duplicate assessment " << context << std::endl; 
+    break;
+  case Error::DuplicateCourseInJSON:
+    std::cerr << "Invalid save file. Duplicate course " << context << std::endl; 
+    break;
   }
 }
