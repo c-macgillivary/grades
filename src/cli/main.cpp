@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   if (!manager.load()) // TODO manage an error here
   {
     loaded = false;
-    std::cout << "failed to load" << std::endl;
+    std::cerr << "failed to load" << std::endl;
   }
   argv = app.ensure_utf8(argv);
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     saveStatus = manager.save();
 
   if (!saveStatus)
-    std::cout << "Could not save changes to file" << std::endl;
+    std::cerr << "Could not save changes to file" << std::endl;
 
   return 0;
 }

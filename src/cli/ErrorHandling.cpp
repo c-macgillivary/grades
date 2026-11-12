@@ -10,19 +10,19 @@ void printErrorMessage(const Error& error, const std::string& context)
   switch (error)
   {
   case Error::CourseAlreadyExists:
-    std::cout << "Course " << context << " already exists" << std::endl;
+    std::cerr << "Course " << context << " already exists" << std::endl;
     break;
   case Error::CourseNotFound:
-    std::cout << "Course " << context << " does not exist" << std::endl;
+    std::cerr << "Course " << context << " does not exist" << std::endl;
     break;
   case Error::AssessmentAlreadyExists:
-    std::cout << "Assessment " << context << " already exists" << std::endl;
+    std::cerr << "Assessment " << context << " already exists" << std::endl;
     break;
   case Error::AssessmentNotFound:
-    std::cout << "Assessment " << context << " does not exist" << std::endl;
+    std::cerr << "Assessment " << context << " does not exist" << std::endl;
     break;
   case Error::CouldNotSaveDataToFile:
-    std::cout << "Could not open file " << context << " for writing" << std::endl;
+    std::cerr << "Could not open file " << context << " for writing" << std::endl;
     break;
   }
 }
@@ -31,7 +31,7 @@ void handleAddCourseError(const Result<void>& result, const std::string& code)
 {
   assert(!result);
 
-  std::cout << "Could not add course " << code << std::endl;
+  std::cerr << "Could not add course " << code << std::endl;
   printErrorMessage(result.error(), code);
 }
 
@@ -39,7 +39,7 @@ void handleRemoveCourseError(const Result<void>& result, const std::string& code
 {
   assert(!result);
 
-  std::cout << "Could not remove course " << code << std::endl;
+  std::cerr << "Could not remove course " << code << std::endl;
   printErrorMessage(result.error(), code);
 }
 
@@ -47,7 +47,7 @@ void handleAddAssessmentError(const Result<void>& result, const std::string& cod
 {
   assert(!result);
 
-  std::cout << "Could not add assessment " << name << " to " << code << std::endl;
+  std::cerr << "Could not add assessment " << name << " to " << code << std::endl;
   std::string context = "";
 
   switch (result.error())
@@ -69,7 +69,7 @@ void handleRemoveAssessmentError(const Result<void>& result, const std::string& 
 {
   assert(!result);
 
-  std::cout << "Could not remove assessment " << name << " from " << code << std::endl;
+  std::cerr << "Could not remove assessment " << name << " from " << code << std::endl;
   std::string context = "";
 
   switch (result.error())
@@ -92,7 +92,7 @@ void handleUpdateGradeError(const Result<OptionalGrade>& result, const std::stri
 {
   assert(!result);
 
-  std::cout << "Could not update grade for " << name << " in " << code << std::endl;
+  std::cerr << "Could not update grade for " << name << " in " << code << std::endl;
   std::string context = "";
 
   switch (result.error())
@@ -115,7 +115,7 @@ void handleShowCourseGradeError(const Result<OptionalGrade>& result, const std::
 {
   assert(!result);
 
-  std::cout << "Could not show current grade in " << code << std::endl;
+  std::cerr << "Could not show current grade in " << code << std::endl;
   printErrorMessage(result.error(), code);
 }
 
@@ -123,7 +123,7 @@ void handleShowAssessmentGradeError(const Result<Grade>& result, const std::stri
 {
   assert(!result);
 
-  std::cout << "Could not show grade for " << name << " in " << code << std::endl;
+  std::cerr << "Could not show grade for " << name << " in " << code << std::endl;
   std::string context = "";
 
   switch (result.error())
