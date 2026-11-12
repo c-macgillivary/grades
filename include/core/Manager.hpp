@@ -15,8 +15,8 @@ private:
   bool _clean = false;
 
 public:
-
   Result<void> addCourse(const std::string& code);
+  Result<void> addCourse(const Course& course);
   Result<void> removeCourse(const std::string& code);
 
   Result<void> addAssessment(const std::string& code, const std::string& name, const Weight& weight, const OptionalGrade& grade);

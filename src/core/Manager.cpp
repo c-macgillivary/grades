@@ -16,6 +16,15 @@ Result<void> Manager::addCourse(const std::string& code)
   return {};
 }
 
+Result<void> Manager::addCourse(const Course& course)
+{
+  if (_courses.contains(course.getCode()))
+    return fail(Error::CourseAlreadyExists);
+
+  _courses.emplace(course.getCode(), course);
+  return {};
+}
+
 Result<void> Manager::removeCourse(const std::string& code)
 {
   if (not _courses.contains(code))
