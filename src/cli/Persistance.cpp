@@ -10,7 +10,7 @@ bool load(Manager& manager)
     return true;
 
   std::cerr << "Could not load data from file" << std::endl;
-  printErrorMessage(result.error(), "");
+  printErrorMessage(result.error());
   return false;
 }
 

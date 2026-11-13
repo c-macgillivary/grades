@@ -40,7 +40,7 @@ void addCourseCallback(Manager& manager, const std::string& code)
   else
   {
     std::cerr << "Could not add course " << code << std::endl;
-    printErrorMessage(result.error(), code);
+    printErrorMessage(result.error());
   }
 }
 
@@ -52,7 +52,7 @@ void removeCourseCallback(Manager& manager, const std::string& code)
   else
   {
     std::cerr << "Could not remove course " << code << std::endl;
-    printErrorMessage(result.error(), code);
+    printErrorMessage(result.error());
   }
 }
 
@@ -94,21 +94,7 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
   else
   {
     std::cerr << "Could not add assessment " << name << " to " << code << std::endl;
-    std::string context = "";
-
-    switch (result.error())
-    {
-    case ErrorCode::AssessmentAlreadyExists:
-      context = name;
-      break;
-    case ErrorCode::CourseNotFound:
-      context = code;
-      break;
-    default:
-      assert(false && "Unexpected error returned by Manager::addAssessment()");
-      break;
-    }
-    printErrorMessage(result.error(), context);
+    printErrorMessage(result.error());
   }
 }
 
@@ -120,22 +106,7 @@ void removeAssessmentCallback(Manager& manager, const std::string& code, const s
   else
   {
     std::cerr << "Could not remove assessment " << name << " from " << code << std::endl;
-    std::string context = "";
-
-    switch (result.error())
-    {
-    case ErrorCode::AssessmentNotFound:
-      context = name;
-      break;
-    case ErrorCode::CourseNotFound:
-      context = code;
-      break;
-    default:
-      assert(false && "Unexpected error returned by Manager::removeAssessment()");
-      break;
-    }
-
-    printErrorMessage(result.error(), context);
+    printErrorMessage(result.error());
   }
 }
 
@@ -151,22 +122,7 @@ void updateGradeCallback(Manager& manager, const std::string& code, const std::s
   if (!oldGrade)
   {
     std::cerr << "Could not update grade for " << name << " in " << code << std::endl;
-    std::string context = "";
-
-    switch (oldGrade.error())
-    {
-    case ErrorCode::AssessmentNotFound:
-      context = name;
-      break;
-    case ErrorCode::CourseNotFound:
-      context = code;
-      break;
-    default:
-      assert(false && "Unexpected error returned by Manager::updateGrade()");
-      break;
-    }
-
-    printErrorMessage(oldGrade.error(), context);
+    printErrorMessage(oldGrade.error());
     return;
   }
 
@@ -184,7 +140,7 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     if (!result)
     {
       std::cerr << "Could not show current grade in " << code << std::endl;
-      printErrorMessage(result.error(), code);
+      printErrorMessage(result.error());
       return;
     }
 
