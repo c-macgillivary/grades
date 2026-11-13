@@ -5,6 +5,6 @@
 
 #include "core/Error.hpp"
 
-void printErrorMessage(const Error& error, const std::string& context);
+void printErrorMessage(const ErrorCode& error, const std::string& context);
 
 #endif // !ERROR_HANDLING_HPP

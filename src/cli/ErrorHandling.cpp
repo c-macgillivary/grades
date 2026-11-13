@@ -4,39 +4,39 @@
 #include "cli/ErrorHandling.hpp"
 #include "core/Error.hpp"
 
-void printErrorMessage(const Error& error, const std::string& context)
+void printErrorMessage(const ErrorCode& error, const std::string& context)
 {
   std::cerr << "Error: ";
   switch (error)
   {
-  case Error::CourseAlreadyExists:
+  case ErrorCode::CourseAlreadyExists:
     std::cerr << "Course " << context << " already exists" << std::endl;
     break;
-  case Error::CourseNotFound:
+  case ErrorCode::CourseNotFound:
     std::cerr << "Course " << context << " does not exist" << std::endl;
     break;
-  case Error::AssessmentAlreadyExists:
+  case ErrorCode::AssessmentAlreadyExists:
     std::cerr << "Assessment " << context << " already exists" << std::endl;
     break;
-  case Error::AssessmentNotFound:
+  case ErrorCode::AssessmentNotFound:
     std::cerr << "Assessment " << context << " does not exist" << std::endl;
     break;
-  case Error::CouldNotSaveDataToFile:
+  case ErrorCode::CouldNotSaveDataToFile:
     std::cerr << "Could not open file " << context << " for writing" << std::endl;
     break;
-  case Error::InvalidWeight:
+  case ErrorCode::InvalidWeight:
     std::cerr << "Invalid weight: " << context << std::endl;
     break;
-  case Error::InvalidGrade:
+  case ErrorCode::InvalidGrade:
     std::cerr << "Invalid grade: " << context << std::endl;
     break;
-  case Error::InvalidCurrentGrade:
+  case ErrorCode::InvalidCurrentGrade:
     std::cerr << "Invalid current grade: " << context << std::endl;
     break;
-  case Error::DuplicateAssessmentInJSON:
+  case ErrorCode::DuplicateAssessmentInJSON:
     std::cerr << "Invalid save file. Duplicate assessment " << context << std::endl; 
     break;
-  case Error::DuplicateCourseInJSON:
+  case ErrorCode::DuplicateCourseInJSON:
     std::cerr << "Invalid save file. Duplicate course " << context << std::endl; 
     break;
   }

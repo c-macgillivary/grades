@@ -9,7 +9,7 @@
 Result<void> Manager::addCourse(const std::string& code)
 {
   if (_courses.contains(code))
-    return fail(Error::CourseAlreadyExists);
+    return fail(ErrorCode::CourseAlreadyExists);
 
   _courses.emplace(code, code);
 
@@ -19,7 +19,7 @@ Result<void> Manager::addCourse(const std::string& code)
 Result<void> Manager::addCourse(const Course& course)
 {
   if (_courses.contains(course.getCode()))
-    return fail(Error::CourseAlreadyExists);
+    return fail(ErrorCode::CourseAlreadyExists);
 
   _courses.emplace(course.getCode(), course);
   return {};
@@ -28,7 +28,7 @@ Result<void> Manager::addCourse(const Course& course)
 Result<void> Manager::removeCourse(const std::string& code)
 {
   if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
+    return fail(ErrorCode::CourseNotFound);
 
   _courses.erase(code);
 
@@ -38,7 +38,7 @@ Result<void> Manager::removeCourse(const std::string& code)
 Result<void> Manager::addAssessment(const std::string& code, const std::string& name, const Weight& weight, const OptionalGrade& grade)
 {
   if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
+    return fail(ErrorCode::CourseNotFound);
 
   return _courses.at(code).addAssessment(name, weight, grade);
 }
@@ -46,7 +46,7 @@ Result<void> Manager::addAssessment(const std::string& code, const std::string& 
 Result<void> Manager::removeAssessment(const std::string& code, const std::string& name)
 {
   if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
+    return fail(ErrorCode::CourseNotFound);
 
   return _courses.at(code).removeAssessment(name);
 }
@@ -54,7 +54,7 @@ Result<void> Manager::removeAssessment(const std::string& code, const std::strin
 Result<OptionalGrade> Manager::updateGrade(const std::string& code, const std::string& name, const Grade& grade)
 {
   if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
+    return fail(ErrorCode::CourseNotFound);
 
   return _courses.at(code).updateGrade(name, grade);
 }
@@ -62,7 +62,7 @@ Result<OptionalGrade> Manager::updateGrade(const std::string& code, const std::s
 Result<OptionalGrade> Manager::getGrade(const std::string& code, const std::string& name) const
 {
   if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
+    return fail(ErrorCode::CourseNotFound);
 
   return _courses.at(code).getGrade(name);
 }
@@ -70,7 +70,7 @@ Result<OptionalGrade> Manager::getGrade(const std::string& code, const std::stri
 Result<OptionalGrade> Manager::getCurrentGrade(const std::string& code) const
 {
   if (not _courses.contains(code))
-    return fail(Error::CourseNotFound);
+    return fail(ErrorCode::CourseNotFound);
 
   return Calculate::currentGrade(_courses.at(code));
 }
@@ -97,7 +97,7 @@ Result<void> Manager::save() const
   nlohmann::json data = _courses;
 
   if (!file.is_open())
-    return fail(Error::CouldNotSaveDataToFile);
+    return fail(ErrorCode::CouldNotSaveDataToFile);
 
   file << data.dump(4);
 
@@ -122,7 +122,7 @@ Result<void> Manager::load()
       return fail(course.error());
 
     if (!addCourse(*course))
-      return fail(Error::DuplicateCourseInJSON);
+      return fail(ErrorCode::DuplicateCourseInJSON);
   }
 
   return {};

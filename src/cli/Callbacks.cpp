@@ -98,10 +98,10 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
 
     switch (result.error())
     {
-    case Error::AssessmentAlreadyExists:
+    case ErrorCode::AssessmentAlreadyExists:
       context = name;
       break;
-    case Error::CourseNotFound:
+    case ErrorCode::CourseNotFound:
       context = code;
       break;
     default:
@@ -124,10 +124,10 @@ void removeAssessmentCallback(Manager& manager, const std::string& code, const s
 
     switch (result.error())
     {
-    case Error::AssessmentNotFound:
+    case ErrorCode::AssessmentNotFound:
       context = name;
       break;
-    case Error::CourseNotFound:
+    case ErrorCode::CourseNotFound:
       context = code;
       break;
     default:
@@ -155,10 +155,10 @@ void updateGradeCallback(Manager& manager, const std::string& code, const std::s
 
     switch (oldGrade.error())
     {
-    case Error::AssessmentNotFound:
+    case ErrorCode::AssessmentNotFound:
       context = name;
       break;
-    case Error::CourseNotFound:
+    case ErrorCode::CourseNotFound:
       context = code;
       break;
     default:

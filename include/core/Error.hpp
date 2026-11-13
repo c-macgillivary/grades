@@ -3,7 +3,7 @@
 
 #include <expected>
 
-enum class Error
+enum class ErrorCode
 {
   CourseNotFound,
   CourseAlreadyExists,
@@ -24,9 +24,9 @@ enum class Error
 template <typename T>
 using Result = std::expected<T, Error>;
 
-inline std::unexpected<Error> fail(Error e)
+inline std::unexpected<Error> fail(ErrorCode code)
 {
-  return std::unexpected<Error>(e);
+  return std::unexpected<Error>(code);
 }
 
 #endif // !ERROR_HPP

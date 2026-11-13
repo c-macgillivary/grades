@@ -6,7 +6,7 @@
 Result<Weight> Weight::create(double part, double total)
 {
   if (total <= 0 or part < 0 or part > total)
-    return fail(Error::InvalidWeight);
+    return fail(ErrorCode::InvalidWeight);
 
   return Weight(part, total);
 }
@@ -14,7 +14,7 @@ Result<Weight> Weight::create(double part, double total)
 Result<Weight> Weight::create(std::pair<double, double> ratio)
 {
   if (ratio.first < 0 or ratio.second <= 0)
-    return fail(Error::InvalidWeight);
+    return fail(ErrorCode::InvalidWeight);
 
   return Weight(ratio.first, ratio.second);
 }

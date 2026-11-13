@@ -26,7 +26,7 @@ Result<OptionalGrade> currentGrade(const Course& course)
 
   auto current = Grade::create(achievedScore, assessedWeight);
   if (!current)
-    return fail(Error::InvalidCurrentGrade);
+    return fail(ErrorCode::InvalidCurrentGrade);
 
   if (assessedWeight == 0.0) // If no assessments have been graded
     return std::nullopt;
