@@ -2,6 +2,7 @@
 #define ERROR_HPP
 
 #include <expected>
+#include <string>
 
 enum class ErrorCode
 {
@@ -21,12 +22,23 @@ enum class ErrorCode
   DuplicateCourseInJSON
 };
 
+struct Error
+{
+  ErrorCode code;
+  std::string context;
+};
+
 template <typename T>
 using Result = std::expected<T, Error>;
 
-inline std::unexpected<Error> fail(ErrorCode code)
+inline std::unexpected<Error> fail(ErrorCode code, const std::string& context = "")
 {
-  return std::unexpected<Error>(code);
+  return std::unexpected<Error>({ code, context });
+}
+
+inline std::unexpected<Error> fail(Error e)
+{
+  return std::unexpected<Error>(e);
 }
 
 #endif // !ERROR_HPP

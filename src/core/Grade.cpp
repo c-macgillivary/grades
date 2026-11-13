@@ -6,7 +6,7 @@
 Result<Grade> Grade::create(double part, double total)
 {
   if (total <= 0 or part < 0)
-    return fail(ErrorCode::InvalidGrade);
+    return fail(ErrorCode::InvalidGrade, std::format("{}/{}", part, total));
 
   return Grade(part, total);
 }
@@ -14,7 +14,7 @@ Result<Grade> Grade::create(double part, double total)
 Result<Grade> Grade::create(std::pair<double, double> ratio)
 {
   if (ratio.first < 0 or ratio.second <= 0)
-    return fail(ErrorCode::InvalidGrade);
+    return fail(ErrorCode::InvalidGrade, std::format("{}/{}", ratio.first, ratio.second));
 
   return Grade(ratio.first, ratio.second);
 }
