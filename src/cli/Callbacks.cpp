@@ -84,6 +84,7 @@ void addCourseCallback(Manager& manager, const std::string& code)
   {
     std::cerr << "Could not add course " << code << std::endl;
     printErrorMessage(result.error());
+    exit(1);
   }
 }
 
@@ -96,6 +97,7 @@ void removeCourseCallback(Manager& manager, const std::string& code)
   {
     std::cerr << "Could not remove course " << code << std::endl;
     printErrorMessage(result.error());
+    exit(1);
   }
 }
 
@@ -138,6 +140,7 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
   {
     std::cerr << "Could not add assessment " << name << " to " << code << std::endl;
     printErrorMessage(result.error());
+    exit(1);
   }
 }
 
@@ -150,6 +153,7 @@ void removeAssessmentCallback(Manager& manager, const std::string& code, const s
   {
     std::cerr << "Could not remove assessment " << name << " from " << code << std::endl;
     printErrorMessage(result.error());
+    exit(1);
   }
 }
 
@@ -166,7 +170,7 @@ void updateGradeCallback(Manager& manager, const std::string& code, const std::s
   {
     std::cerr << "Could not update grade for " << name << " in " << code << std::endl;
     printErrorMessage(oldGrade.error());
-    return;
+    exit(1);
   }
 
   if (*oldGrade == std::nullopt)
@@ -184,7 +188,7 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     {
       std::cerr << "Could not show current grade in " << code << std::endl;
       printErrorMessage(result.error());
-      return;
+      exit(1);
     }
 
     if (*result == std::nullopt)
