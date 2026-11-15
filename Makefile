@@ -1,4 +1,4 @@
-.PHONY: all configure debug release core install clean
+.PHONY: all configure debug release core test install clean
 
 all: debug
 
@@ -21,6 +21,10 @@ core: configure
 
 cli: configure
 	cmake --build --preset debug --target cli --parallel
+
+test:
+	@$(MAKE) --silent --no-print-directory release > /dev/null
+	@python3 tests/test_grades.py
 
 install: release
 	sudo cmake --install build --config release
