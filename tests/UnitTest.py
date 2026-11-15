@@ -25,8 +25,8 @@ import shlex
 import subprocess
 import sys
 import tempfile
-from collections.abc import Sequence
 from pathlib import Path
+from typing import Mapping, Sequence
 
 
 class TestRunner:
@@ -45,7 +45,9 @@ class TestRunner:
         self.close()
 
     @staticmethod
-    def _resolve_returncode(*, error: bool, expected_returncode: int | None) -> int:
+    def _resolve_returncode(
+        *, error: bool, expected_returncode: int | None
+    ) -> int:
         """Resolve the expected status code.
 
         An explicitly supplied expected_returncode wins. Otherwise, error=True
@@ -78,6 +80,8 @@ class TestRunner:
         stderr_contains: str | Sequence[str],
         stdout_not_contains: str | Sequence[str],
         stderr_not_contains: str | Sequence[str],
+        stdout_occurrences: Mapping[str, int] | None,
+        stderr_occurrences: Mapping[str, int] | None,
     ) -> bool:
         command = [self.executable, *map(str, args)]
         env = os.environ.copy()
@@ -169,6 +173,24 @@ class TestRunner:
                     f"Actual stderr was:\n  {result.stderr!r}"
                 )
 
+        for expected, expected_count in (stdout_occurrences or {}).items():
+            actual_count = result.stdout.count(expected)
+            if actual_count != expected_count:
+                problems.append(
+                    f"Expected {expected!r} to occur {expected_count} time(s) "
+                    f"in stdout, but it occurred {actual_count} time(s).\n"
+                    f"Actual stdout was:\n  {result.stdout!r}"
+                )
+
+        for expected, expected_count in (stderr_occurrences or {}).items():
+            actual_count = result.stderr.count(expected)
+            if actual_count != expected_count:
+                problems.append(
+                    f"Expected {expected!r} to occur {expected_count} time(s) "
+                    f"in stderr, but it occurred {actual_count} time(s).\n"
+                    f"Actual stderr was:\n  {result.stderr!r}"
+                )
+
         if problems:
             self._record_failure(name, command, problems)
             return False
@@ -200,6 +222,8 @@ class TestRunner:
         stderr_contains: str | Sequence[str] = (),
         stdout_not_contains: str | Sequence[str] = (),
         stderr_not_contains: str | Sequence[str] = (),
+        stdout_occurrences: Mapping[str, int] | None = None,
+        stderr_occurrences: Mapping[str, int] | None = None,
     ) -> bool:
         """Run one command with a brand-new, disposable data directory.
 
@@ -214,6 +238,8 @@ class TestRunner:
         a prompt. Set expected_stdout/expected_stderr for exact output checks;
         use *_contains and *_not_contains for partial output checks. Each
         substring argument can be either one string or a sequence of strings.
+        Use stdout_occurrences/stderr_occurrences to assert exact substring
+        counts, e.g. stdout_occurrences={"CS145": 1}.
         """
         if self._closed:
             raise RuntimeError("TestRunner is already closed")
@@ -221,7 +247,12 @@ class TestRunner:
         returncode = self._resolve_returncode(
             error=error, expected_returncode=expected_returncode
         )
-        if returncode == 0 and expected_stderr is None and not stderr_contains:
+        if (
+            returncode == 0
+            and expected_stderr is None
+            and not stderr_contains
+            and not stderr_occurrences
+        ):
             expected_stderr = ""
 
         with tempfile.TemporaryDirectory(prefix="grades-test-isolated-") as data_home:
@@ -237,6 +268,8 @@ class TestRunner:
                 stderr_contains=stderr_contains,
                 stdout_not_contains=stdout_not_contains,
                 stderr_not_contains=stderr_not_contains,
+                stdout_occurrences=stdout_occurrences,
+                stderr_occurrences=stderr_occurrences,
             )
 
     def run_stateful(
@@ -252,6 +285,8 @@ class TestRunner:
         stderr_contains: str | Sequence[str] = (),
         stdout_not_contains: str | Sequence[str] = (),
         stderr_not_contains: str | Sequence[str] = (),
+        stdout_occurrences: Mapping[str, int] | None = None,
+        stderr_occurrences: Mapping[str, int] | None = None,
     ) -> bool:
         """Run a command using data shared by all stateful calls.
 
@@ -274,7 +309,12 @@ class TestRunner:
         returncode = self._resolve_returncode(
             error=error, expected_returncode=expected_returncode
         )
-        if returncode == 0 and expected_stderr is None and not stderr_contains:
+        if (
+            returncode == 0
+            and expected_stderr is None
+            and not stderr_contains
+            and not stderr_occurrences
+        ):
             expected_stderr = ""
 
         if self._stateful_temp is None:
@@ -294,6 +334,8 @@ class TestRunner:
             stderr_contains=stderr_contains,
             stdout_not_contains=stdout_not_contains,
             stderr_not_contains=stderr_not_contains,
+            stdout_occurrences=stdout_occurrences,
+            stderr_occurrences=stderr_occurrences,
         )
 
     def reset_state(self) -> None:
