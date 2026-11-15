@@ -1,11 +1,11 @@
 """Small integration-test runner for the grades CLI.
 
-Two execution modes are provided:
+Execution methods are provided for isolated and stateful commands:
 
 * run_isolated(...): runs one command with a fresh temporary XDG_DATA_HOME.
-  The temporary directory is removed as soon as that command finishes.
-* run_stateful(...): runs a command using a shared temporary XDG_DATA_HOME.
-  Consecutive stateful calls see the same data until reset_state() or close().
+* run_stateful(...): runs one command using shared data.
+* run_many(...): runs a sequence of stateful test cases in order, each in a
+  separate process but sharing the same temporary XDG_DATA_HOME.
 
 Each call is one test. Failures are written to stderr, counted, and do not
 prevent later tests from running.
@@ -26,7 +26,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 
 class TestRunner:
@@ -337,6 +337,67 @@ class TestRunner:
             stdout_occurrences=stdout_occurrences,
             stderr_occurrences=stderr_occurrences,
         )
+
+    def run_many(
+        self,
+        test_cases: Sequence[tuple[Sequence[str], Mapping[str, Any]]],
+    ) -> bool:
+        """Run multiple stateful tests in order.
+
+        Each test case is a pair of ``(positional_args, keyword_options)``.
+        The positional arguments are exactly what would be passed to
+        ``run_stateful`` (the test name first, followed by CLI arguments).
+        The keyword options are the assertions and settings for that test.
+
+        Every case launches a separate process, but all cases share the same
+        temporary data directory. Tests continue running after a failure.
+        Returns True only if every test case passed.
+
+        Example::
+
+            test.run_many([
+                (("List courses", "c", "l"),
+                 {"stdout_contains": "no courses"}),
+                (("Add course", "c", "a", "CS145"), {}),
+            ])
+        """
+        all_passed = True
+
+        for index, test_case in enumerate(test_cases, start=1):
+            if not isinstance(test_case, (tuple, list)) or len(test_case) != 2:
+                raise TypeError(
+                    f"Test case {index} must be a pair of "
+                    "(positional_args, keyword_options)"
+                )
+
+            positional_args, keyword_options = test_case
+
+            if (
+                isinstance(positional_args, (str, bytes))
+                or not isinstance(positional_args, Sequence)
+                or not positional_args
+                or not all(isinstance(arg, str) for arg in positional_args)
+            ):
+                raise TypeError(
+                    f"Test case {index} positional arguments must be a non-empty "
+                    "sequence of strings, beginning with the test name"
+                )
+
+            if not isinstance(keyword_options, Mapping):
+                raise TypeError(
+                    f"Test case {index} keyword options must be a mapping"
+                )
+
+            if not all(isinstance(key, str) for key in keyword_options):
+                raise TypeError(
+                    f"Test case {index} contains a non-string keyword name"
+                )
+
+            passed = self.run_stateful(*positional_args, **keyword_options)
+            if not passed:
+                all_passed = False
+
+        return all_passed
 
     def reset_state(self) -> None:
         """Discard stateful test data; the next stateful call starts fresh."""
