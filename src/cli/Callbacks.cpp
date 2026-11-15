@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -6,6 +8,13 @@
 #include "cli/ErrorHandling.hpp"
 #include "core/Grade.hpp"
 #include "core/Manager.hpp"
+
+bool isWhitespace(const std::string& str)
+{
+  return std::all_of(str.begin(), str.end(),
+                     [](unsigned char c)
+                     { return std::isspace(c); });
+}
 
 std::pair<double, double> parseInput(const std::string& input)
 {
@@ -77,6 +86,13 @@ std::string gradeToScore(const Grade& grade)
 
 void addCourseCallback(Manager& manager, const std::string& code)
 {
+  if (isWhitespace(code))
+  {
+    std::cerr << "Could not add course \"" << code << "\"" << std::endl;
+    printErrorMessage({ ErrorCode::InvalidCourseCode, "\"" + code + "\"" });
+    exit(1);
+  }
+
   auto result = manager.addCourse(code);
   if (result)
     std::cout << "Successfully added course " << code << std::endl;
@@ -113,6 +129,13 @@ void listCoursesCallback(Manager& manager)
 
 void addAssessmentCallback(Manager& manager, const std::string& code, const std::string& name, const std::string& weightInput, const std::string& gradeInput)
 {
+  if (isWhitespace(name))
+  {
+    std::cerr << "Could not add assessment \"" << name << "\"" << std::endl;
+    printErrorMessage({ ErrorCode::InvalidAssessmentName, "\"" + name + "\"" });
+    exit(1);
+  }
+
   auto weight = Weight::create(parseInput(weightInput));
 
   if (!weight)

@@ -9,6 +9,12 @@ void printErrorMessage(const Error& error)
   std::cerr << "Error: ";
   switch (error.code)
   {
+  case ErrorCode::InvalidCourseCode:
+    std::cerr << error.context << " is an invalid course code" << std::endl;
+    break;
+  case ErrorCode::InvalidAssessmentName:
+    std::cerr << error.context << " is an invalid assessment name" << std::endl;
+    break;
   case ErrorCode::CourseAlreadyExists:
     std::cerr << "Course " << error.context << " already exists" << std::endl;
     break;
@@ -34,10 +40,10 @@ void printErrorMessage(const Error& error)
     std::cerr << "Invalid current grade: " << error.context << std::endl;
     break;
   case ErrorCode::DuplicateAssessmentInJSON:
-    std::cerr << "Invalid save file. Duplicate assessment " << error.context << std::endl; 
+    std::cerr << "Invalid save file. Duplicate assessment " << error.context << std::endl;
     break;
   case ErrorCode::DuplicateCourseInJSON:
-    std::cerr << "Invalid save file. Duplicate course " << error.context << std::endl; 
+    std::cerr << "Invalid save file. Duplicate course " << error.context << std::endl;
     break;
   }
 }
