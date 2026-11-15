@@ -1,6 +1,6 @@
 # Grades Tracker
-[![Build](https://github.com/c-macgillivary/grades/actions/workflows/build.yaml/badge.svg)](https://github.com/c-macgillivary/grades/actions/workflows/build.yaml)
-[![Tests](https://github.com/c-macgillivary/grades/actions/workflows/tests.yaml/badge.svg)](https://github.com/c-macgillivary/grades/actions/workflows/tests.yaml)
+[![Build](https://github.com/c-macgillivary/grades/actions/workflows/build.yaml/badge.svg?cache=1)](https://github.com/c-macgillivary/grades/actions/workflows/build.yaml)
+[![Tests](https://github.com/c-macgillivary/grades/actions/workflows/tests.yaml/badge.svg?cache=1)](https://github.com/c-macgillivary/grades/actions/workflows/tests.yaml)
 
 This is a project meant to track grades in a given course.
 Functionality is being added daily.
