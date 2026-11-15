@@ -9,6 +9,13 @@ Two execution modes are provided:
 
 Each call is one test. Failures are written to stderr, counted, and do not
 prevent later tests from running.
+
+Both execution modes accept input_text to simulate text entered by a user.
+They also accept error=True as shorthand for expecting exit code 1. An
+explicit expected_returncode takes precedence over the error shorthand.
+
+Successful commands (expected exit code 0) must not write anything to stderr
+unless expected_stderr or stderr_contains is explicitly supplied.
 """
 
 from __future__ import annotations
@@ -18,8 +25,8 @@ import shlex
 import subprocess
 import sys
 import tempfile
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 
 class TestRunner:
@@ -38,14 +45,24 @@ class TestRunner:
         self.close()
 
     @staticmethod
-    def _resolve_returncode(
-        error: bool,
-        expected_returncode: int | None,
-    ) -> int:
+    def _resolve_returncode(*, error: bool, expected_returncode: int | None) -> int:
+        """Resolve the expected status code.
+
+        An explicitly supplied expected_returncode wins. Otherwise, error=True
+        expects 1 and the default (error=False) expects 0.
+        """
         if expected_returncode is not None:
             return expected_returncode
-
         return 1 if error else 0
+
+    @staticmethod
+    def _normalize_expectations(
+        values: str | Sequence[str],
+    ) -> tuple[str, ...]:
+        """Treat a single string as one substring, not as characters."""
+        if isinstance(values, str):
+            return (values,)
+        return tuple(values)
 
     def _run(
         self,
@@ -53,12 +70,14 @@ class TestRunner:
         args: Sequence[str],
         data_home: str,
         *,
+        input_text: str | None,
         expected_returncode: int,
         expected_stdout: str | None,
         expected_stderr: str | None,
-        stdout_contains: Sequence[str],
-        stderr_contains: Sequence[str],
-        input_text: str | None,
+        stdout_contains: str | Sequence[str],
+        stderr_contains: str | Sequence[str],
+        stdout_not_contains: str | Sequence[str],
+        stderr_not_contains: str | Sequence[str],
     ) -> bool:
         command = [self.executable, *map(str, args)]
         env = os.environ.copy()
@@ -67,14 +86,13 @@ class TestRunner:
         try:
             result = subprocess.run(
                 command,
+                input=input_text,
                 capture_output=True,
                 text=True,
-                input=input_text,
                 env=env,
                 timeout=self.timeout,
                 check=False,
             )
-
         except subprocess.TimeoutExpired as error:
             self._record_failure(
                 name,
@@ -86,13 +104,12 @@ class TestRunner:
                 ],
             )
             return False
-
         except OSError as error:
             self._record_failure(
                 name,
                 command,
                 [
-                    f"Expected the executable to run successfully, "
+                    "Expected the executable to run successfully, "
                     f"but it could not be started: {error}"
                 ],
             )
@@ -122,17 +139,33 @@ class TestRunner:
                 f"  {result.stderr!r}"
             )
 
-        for expected in stdout_contains:
+        for expected in self._normalize_expectations(stdout_contains):
             if expected not in result.stdout:
                 problems.append(
                     f"Expected stdout to contain {expected!r}, but it did not.\n"
                     f"Actual stdout was:\n  {result.stdout!r}"
                 )
 
-        for expected in stderr_contains:
+        for unexpected in self._normalize_expectations(stdout_not_contains):
+            if unexpected in result.stdout:
+                problems.append(
+                    f"Expected stdout not to contain {unexpected!r}, "
+                    "but it did.\n"
+                    f"Actual stdout was:\n  {result.stdout!r}"
+                )
+
+        for expected in self._normalize_expectations(stderr_contains):
             if expected not in result.stderr:
                 problems.append(
                     f"Expected stderr to contain {expected!r}, but it did not.\n"
+                    f"Actual stderr was:\n  {result.stderr!r}"
+                )
+
+        for unexpected in self._normalize_expectations(stderr_not_contains):
+            if unexpected in result.stderr:
+                problems.append(
+                    f"Expected stderr not to contain {unexpected!r}, "
+                    "but it did.\n"
                     f"Actual stderr was:\n  {result.stderr!r}"
                 )
 
@@ -145,18 +178,13 @@ class TestRunner:
         return True
 
     def _record_failure(
-        self,
-        name: str,
-        command: Sequence[str],
-        problems: Sequence[str],
+        self, name: str, command: Sequence[str], problems: Sequence[str]
     ) -> None:
         self.failed += 1
         print(f"\033[91mFAIL\033[0m: {name}", file=sys.stderr)
         print(f"  Command: {shlex.join(command)}", file=sys.stderr)
-
         for problem in problems:
             print(f"  {problem}", file=sys.stderr)
-
         print(file=sys.stderr)
 
     def run_isolated(
@@ -165,44 +193,50 @@ class TestRunner:
         *args: str,
         error: bool = False,
         expected_returncode: int | None = None,
+        input_text: str | None = None,
         expected_stdout: str | None = None,
         expected_stderr: str | None = None,
-        stdout_contains: Sequence[str] = (),
-        stderr_contains: Sequence[str] = (),
-        input_text: str | None = None,
+        stdout_contains: str | Sequence[str] = (),
+        stderr_contains: str | Sequence[str] = (),
+        stdout_not_contains: str | Sequence[str] = (),
+        stderr_not_contains: str | Sequence[str] = (),
     ) -> bool:
         """Run one command with a brand-new, disposable data directory.
 
-        By default, expects exit code 0.
+        By default, the command is expected to exit with status 0. Set
+        error=True to expect status 1, or supply expected_returncode to check
+        an exact status code (which takes precedence over error).
 
-        Set error=True to expect exit code 1.
+        Successful commands must leave stderr empty by default. Supplying
+        expected_stderr or stderr_contains overrides that default check.
 
-        Set expected_returncode to explicitly specify another exit code.
-        An explicitly specified return code takes precedence over error.
-
-        Use input_text to simulate user input to the command.
-
-        Set expected_stdout/expected_stderr to an exact string when
-        exact formatting matters. Use *_contains for partial output checks.
+        Set input_text to simulate user input, for example "y\\n" to confirm
+        a prompt. Set expected_stdout/expected_stderr for exact output checks;
+        use *_contains and *_not_contains for partial output checks. Each
+        substring argument can be either one string or a sequence of strings.
         """
         if self._closed:
             raise RuntimeError("TestRunner is already closed")
 
-        returncode = self._resolve_returncode(error, expected_returncode)
+        returncode = self._resolve_returncode(
+            error=error, expected_returncode=expected_returncode
+        )
+        if returncode == 0 and expected_stderr is None and not stderr_contains:
+            expected_stderr = ""
 
-        with tempfile.TemporaryDirectory(
-            prefix="grades-test-isolated-"
-        ) as data_home:
+        with tempfile.TemporaryDirectory(prefix="grades-test-isolated-") as data_home:
             return self._run(
                 name,
                 args,
                 data_home,
+                input_text=input_text,
                 expected_returncode=returncode,
                 expected_stdout=expected_stdout,
                 expected_stderr=expected_stderr,
                 stdout_contains=stdout_contains,
                 stderr_contains=stderr_contains,
-                input_text=input_text,
+                stdout_not_contains=stdout_not_contains,
+                stderr_not_contains=stderr_not_contains,
             )
 
     def run_stateful(
@@ -211,30 +245,37 @@ class TestRunner:
         *args: str,
         error: bool = False,
         expected_returncode: int | None = None,
+        input_text: str | None = None,
         expected_stdout: str | None = None,
         expected_stderr: str | None = None,
-        stdout_contains: Sequence[str] = (),
-        stderr_contains: Sequence[str] = (),
-        input_text: str | None = None,
+        stdout_contains: str | Sequence[str] = (),
+        stderr_contains: str | Sequence[str] = (),
+        stdout_not_contains: str | Sequence[str] = (),
+        stderr_not_contains: str | Sequence[str] = (),
     ) -> bool:
         """Run a command using data shared by all stateful calls.
 
         The shared temporary data directory is created on the first call and
-        removed by reset_state() or close().
+        removed by reset_state() or close(). By default, the command must exit
+        with status 0. Use error=True to expect status 1, or supply an exact
+        expected_returncode (which takes precedence over error).
 
-        By default, expects exit code 0.
+        Successful commands must leave stderr empty by default. Supplying
+        expected_stderr or stderr_contains overrides that default check.
 
-        Set error=True to expect exit code 1.
-
-        Set expected_returncode to explicitly specify another exit code.
-        An explicitly specified return code takes precedence over error.
-
-        Use input_text to simulate user input to the command.
+        Set input_text to simulate user input, for example "n\\n" to decline
+        a prompt. Use *_contains and *_not_contains for partial output checks.
+        Each substring argument can be either one string or a sequence of
+        strings.
         """
         if self._closed:
             raise RuntimeError("TestRunner is already closed")
 
-        returncode = self._resolve_returncode(error, expected_returncode)
+        returncode = self._resolve_returncode(
+            error=error, expected_returncode=expected_returncode
+        )
+        if returncode == 0 and expected_stderr is None and not stderr_contains:
+            expected_stderr = ""
 
         if self._stateful_temp is None:
             self._stateful_temp = tempfile.TemporaryDirectory(
@@ -245,12 +286,14 @@ class TestRunner:
             name,
             args,
             self._stateful_temp.name,
+            input_text=input_text,
             expected_returncode=returncode,
             expected_stdout=expected_stdout,
             expected_stderr=expected_stderr,
             stdout_contains=stdout_contains,
             stderr_contains=stderr_contains,
-            input_text=input_text,
+            stdout_not_contains=stdout_not_contains,
+            stderr_not_contains=stderr_not_contains,
         )
 
     def reset_state(self) -> None:
@@ -265,12 +308,10 @@ class TestRunner:
     def summary(self) -> bool:
         """Print totals and return True only when every test passed."""
         total = self.passed + self.failed
-
         print("\nTest summary:")
         print(f"  Passed: {self.passed}")
         print(f"  Failed: {self.failed}")
         print(f"  Total:  {total}")
-
         return self.failed == 0
 
     def close(self) -> None:
@@ -278,5 +319,4 @@ class TestRunner:
         if self._stateful_temp is not None:
             self._stateful_temp.cleanup()
             self._stateful_temp = None
-
         self._closed = True
