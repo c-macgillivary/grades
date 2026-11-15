@@ -5,9 +5,12 @@
 #include "core/Config.hpp"
 #include "core/Error.hpp"
 #include "core/Manager.hpp"
+#include "core/Utility.hpp"
 
 Result<void> Manager::addCourse(const std::string& code)
 {
+  if (isWhitespace(code))
+    return fail(ErrorCode::InvalidCourseCode, "\"" + code + "\"");
   if (_courses.contains(code))
     return fail(ErrorCode::CourseAlreadyExists, code);
 
@@ -18,6 +21,9 @@ Result<void> Manager::addCourse(const std::string& code)
 
 Result<void> Manager::addCourse(const Course& course)
 {
+  if (isWhitespace(course.getCode()))
+    return fail(ErrorCode::InvalidCourseCode, "\"" + course.getCode() + "\"");
+
   if (_courses.contains(course.getCode()))
     return fail(ErrorCode::CourseAlreadyExists, course.getCode());
 
@@ -37,6 +43,9 @@ Result<void> Manager::removeCourse(const std::string& code)
 
 Result<void> Manager::addAssessment(const std::string& code, const std::string& name, const Weight& weight, const OptionalGrade& grade)
 {
+  if (isWhitespace(name))
+    return fail(ErrorCode::InvalidAssessmentName, "\"" + name + "\"");
+
   if (not _courses.contains(code))
     return fail(ErrorCode::CourseNotFound, code);
 
