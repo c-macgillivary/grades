@@ -237,7 +237,12 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     else
       grade = gradeToPercent(**gradeResult);
 
-    std::cout << "Grade for " << name << " in " << code << " is " << grade << "%" << std::endl;
+    std::cout << "Grade for " << name << " in " << code << " is " << grade;
+
+    if (not showScore)
+      std::cout << "%";
+
+    std::cout << std::endl;
   }
 }
 
