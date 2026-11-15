@@ -209,7 +209,7 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     if (*result == std::nullopt)
       std::cout << "Cannot calulate grade. No marks have been entered for " << code << std::endl;
 
-    double grade = (**result).ratio();
+    double grade = (**result).ratio() * 100;
 
     if (not showExact)
       grade = round(grade);
@@ -237,12 +237,7 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     else
       grade = gradeToPercent(**gradeResult);
 
-    std::cout << "Grade for " << name << " in " << code << " is " << grade;
-
-    if (not showScore)
-      std::cout << "%";
-
-    std::cout << std::endl;
+    std::cout << "Grade for " << name << " in " << code << " is " << grade << std::endl;;
   }
 }
 
