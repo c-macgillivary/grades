@@ -9,13 +9,56 @@
 
 std::pair<double, double> parseInput(const std::string& input)
 {
-  size_t pos = input.find("/");
+  try
+  {
+    size_t slashPos = input.find("/");
+    size_t percentPos = input.find("%");
+    size_t numParsed = 0;
+    size_t denomParsed = 0;
+    std::string numStr = input.substr(0, slashPos);
+    std::string denomStr = "";
 
-  // If a percentage was given
-  if (pos == std::string::npos)
-    return { std::stod(input), 100.0 };
-  else
-    return { std::stod(input.substr(0, pos)), std::stod(input.substr(pos + 1)) };
+    double num = std::stod(numStr, &numParsed);
+    double denom = 100;
+
+    // Read the denominator if input is in fraction form
+    if (slashPos != std::string::npos)
+    {
+      denomStr = input.substr(slashPos + 1);
+      denom = std::stod(denomStr, &denomParsed);
+    }
+
+    bool invalidPercent = percentPos != std::string::npos and percentPos != input.size() - 1;
+    bool invalidNum = numParsed != (numStr.size() - (size_t)(percentPos != std::string::npos));
+    bool invalidDenom = denomParsed != denomStr.size();
+
+    // Validate input is in proper numeric form
+    if (invalidPercent or invalidNum or invalidDenom)
+    {
+      std::cerr << "Error: Invalid input \"" << input << "\"" << std::endl;
+      exit(1);
+    }
+
+    // Validate input values
+    if (num < 0)
+    {
+      std::cerr << "Error: Input must be a non-negative value." << std::endl;
+      exit(1);
+    }
+    if (denom <= 0)
+    {
+      std::cerr << "Error: Denominator must be positive." << std::endl;
+      exit(1);
+    }
+
+    return { num, denom };
+  }
+  // Catch any errors thrown by std::stod
+  catch (const std::exception&)
+  {
+    std::cerr << "Error: Invalid input \"" << input << "\"\n";
+    exit(1);
+  }
 }
 
 std::string gradeToPercent(const Grade& grade, bool exact = false)
