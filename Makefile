@@ -23,7 +23,7 @@ cli: configure
 	cmake --build --preset debug --target cli --parallel
 
 test:
-	@$(MAKE) --silent --no-print-directory release > /dev/null
+	@$(MAKE) --no-print-directory release > /tmp/grades-build.log 2>&1 || (cat /tmp/grades-build.log; exit 1)
 	@echo "Testing course subcommand"
 	@python3 tests/test_course.py
 
