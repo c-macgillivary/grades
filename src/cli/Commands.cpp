@@ -35,7 +35,7 @@ void registerCourseCommands(CLI::App& app, Manager& manager)
 void registerAssessmentCommands(CLI::App& app, Manager& manager)
 {
   // assessment subcommand
-  auto assessments_cmd = app.add_subcommand("assessments", "Manage assessments");
+  auto assessments_cmd = app.add_subcommand("assessment", "Manage assessments");
   assessments_cmd->alias("a");
   assessments_cmd->require_subcommand(1);
 
