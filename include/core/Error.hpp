@@ -6,9 +6,11 @@
 
 enum class ErrorCode
 {
+  InvalidCourseCode,
   CourseNotFound,
   CourseAlreadyExists,
 
+  InvalidAssessmentName,
   AssessmentNotFound,
   AssessmentAlreadyExists,
 

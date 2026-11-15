@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -8,13 +6,7 @@
 #include "cli/ErrorHandling.hpp"
 #include "core/Grade.hpp"
 #include "core/Manager.hpp"
-
-bool isWhitespace(const std::string& str)
-{
-  return std::all_of(str.begin(), str.end(),
-                     [](unsigned char c)
-                     { return std::isspace(c); });
-}
+#include "core/Utility.hpp"
 
 std::pair<double, double> parseInput(const std::string& input)
 {
