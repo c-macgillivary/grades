@@ -408,14 +408,14 @@ class TestRunner:
             self._stateful_temp.cleanup()
             self._stateful_temp = None
 
-    def summary(self) -> bool:
-        """Print totals and return True only when every test passed."""
+    def summary(self) -> int:
+        """Print totals and return number of failed tests."""
         total = self.passed + self.failed
         print("\nTest summary:")
         print(f"  Passed: {self.passed}")
         print(f"  Failed: {self.failed}")
         print(f"  Total:  {total}")
-        return self.failed == 0
+        return self.failed
 
     def close(self) -> None:
         """Remove shared temporary data. Safe to call more than once."""

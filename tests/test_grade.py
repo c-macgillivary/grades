@@ -1,0 +1,198 @@
+"""Integration tests for the implemented grade update/show commands.
+
+Run from the repository root:
+    python3 tests/test_grade.py
+"""
+
+import os
+
+from UnitTest import TestRunner
+
+EXECUTABLE = os.environ.get("GRADES_EXECUTABLE", "./build/bin/release/grades")
+
+
+def main() -> int:
+    with TestRunner(EXECUTABLE) as test:
+        test.run_many(
+            [
+                # Fixtures.
+                (("Create primary grade-test course", "c", "a", "CS145"),
+                 {"stdout_contains": "Successfully added course CS145"}),
+                (("Create an ungraded assessment", "a", "a", "CS145", "Quiz", "20"),
+                 {"stdout_contains": "Successfully added assessment Quiz"}),
+                (("Create a graded ratio assessment", "a", "a", "CS145", "Midterm", "30", "18/20"),
+                 {"stdout_contains": "Successfully added assessment Midterm"}),
+                (("Create a graded percentage assessment", "a", "a", "CS145", "Final", "50", "82.5%"),
+                 {"stdout_contains": "Successfully added assessment Final"}),
+
+                # Command grammar and required/optional arguments.
+                (("Grade parent requires a subcommand", "grade"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Grade alias requires a subcommand", "g"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Unknown grade subcommand is rejected", "g", "invalid"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Update requires all three positional arguments", "g", "update"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Update requires assessment name and grade", "g", "u", "CS145"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Update requires a new grade", "g", "u", "CS145", "Quiz"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Show requires a course code", "g", "show"),
+                 {"error": True, "expected_returncode": 106}),
+                (("Show rejects an extra positional argument", "g", "s", "CS145", "Quiz", "extra"),
+                 {"error": True, "expected_returncode": 109}),
+                (("Update rejects an extra positional argument", "g", "u", "CS145", "Quiz", "80", "extra"),
+                 {"error": True, "expected_returncode": 109}),
+
+                # Showing individual assessment grades.
+                (("Show ungraded assessment", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Assessment Quiz in CS145 has not been completed\n"}),
+                (("Show ratio grade in percentage mode (current double-percent output)", "grade", "show", "CS145", "Midterm"),
+                 {"expected_stdout": "Grade for Midterm in CS145 is 90%%\n"}),
+                (("Show percentage-input grade (current double-percent output)", "g", "s", "CS145", "Final"),
+                 {"expected_stdout": "Grade for Final in CS145 is 83%%\n"}),
+                (("Show grade as a score with short flag", "g", "s", "-s", "CS145", "Midterm"),
+                 {"expected_stdout": "Grade for Midterm in CS145 is 18/20%\n"}),
+                (("Show grade as a score with long flag", "grade", "show", "--score", "CS145", "Final"),
+                 {"expected_stdout": "Grade for Final in CS145 is 82.5/100%\n"}),
+                (("Show alias works for show", "g", "s", "CS145", "Midterm"),
+                 {"expected_stdout": "Grade for Midterm in CS145 is 90%%\n"}),
+                (("Unknown assessment in known course currently returns silently", "g", "s", "CS145", "DoesNotExist"),
+                 {"expected_stdout": "", "expected_stderr": ""}),
+                (("Assessment lookup in unknown course currently returns silently", "g", "s", "MISSING", "Quiz"),
+                 {"expected_stdout": "", "expected_stderr": ""}),
+
+                # Grade-input parser: malformed syntax and domain checks.
+                (("Reject nonnumeric update input", "g", "u", "CS145", "Quiz", "abc"),
+                 {"error": True, "stderr_contains": 'Invalid input "abc"'}),
+                (("Reject empty update input", "g", "u", "CS145", "Quiz", ""),
+                 {"error": True, "stderr_contains": 'Invalid input ""'}),
+                (("Reject trailing alphabetic characters", "g", "u", "CS145", "Quiz", "80abc"),
+                 {"error": True, "stderr_contains": 'Invalid input "80abc"'}),
+                (("Reject trailing whitespace", "g", "u", "CS145", "Quiz", "80 "),
+                 {"error": True, "stderr_contains": 'Invalid input "80 "'}),
+                (("Reject percent sign followed by more text", "g", "u", "CS145", "Quiz", "80%x"),
+                 {"error": True, "stderr_contains": 'Invalid input "80%x"'}),
+                (("Reject repeated percent signs", "g", "u", "CS145", "Quiz", "80%%"),
+                 {"error": True, "stderr_contains": 'Invalid input "80%%"'}),
+                (("Reject multiple ratio separators", "g", "u", "CS145", "Quiz", "80/100/2"),
+                 {"error": True, "stderr_contains": 'Invalid input "80/100/2"'}),
+                (("Reject empty numerator", "g", "u", "CS145", "Quiz", "/100"),
+                 {"error": True, "stderr_contains": 'Invalid input "/100"'}),
+                (("Reject empty denominator", "g", "u", "CS145", "Quiz", "80/"),
+                 {"error": True, "stderr_contains": 'Invalid input "80/"'}),
+                (("Reject percent suffix on a ratio", "g", "u", "CS145", "Quiz", "80/100%"),
+                 {"error": True, "stderr_contains": 'Invalid input "80/100%"'}),
+                (("Reject negative percentage grade", "g", "u", "CS145", "Quiz", "-1"),
+                 {"error": True, "stderr_contains": "Input must be a non-negative value"}),
+                (("Reject negative ratio numerator", "g", "u", "CS145", "Quiz", "-1/20"),
+                 {"error": True, "stderr_contains": "Input must be a non-negative value"}),
+                (("Reject zero ratio denominator", "g", "u", "CS145", "Quiz", "80/0"),
+                 {"error": True, "stderr_contains": "Denominator must be positive"}),
+                (("Reject negative ratio denominator", "g", "u", "CS145", "Quiz", "80/-20"),
+                 {"error": True, "stderr_contains": "Denominator must be positive"}),
+                (("Invalid grade parsing occurs before course lookup", "g", "u", "MISSING", "Quiz", "bad"),
+                 {"error": True, "stderr_contains": 'Invalid input "bad"',
+                  "stderr_not_contains": "Course MISSING does not exist"}),
+                (("Rejected update inputs leave the existing assessment ungraded", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Assessment Quiz in CS145 has not been completed\n"}),
+
+                # Valid update forms, boundaries, rounding, and previous-grade reporting.
+                (("Update an ungraded assessment using a ratio", "g", "u", "CS145", "Quiz", "17/20"),
+                 {"expected_stdout": "Added grade 85% to assessment Quiz in CS145\n"}),
+                (("Show newly assigned grade", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Grade for Quiz in CS145 is 85%%\n"}),
+                (("Update an existing grade using a ratio", "grade", "update", "CS145", "Quiz", "179/200"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 85% to 90%\n"}),
+                (("Rounding uses nearest integer for update messages", "g", "u", "CS145", "Quiz", "89.4%"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 90% to 89%\n"}),
+                (("Update to the same grade still reports an update", "g", "u", "CS145", "Quiz", "89.4"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 89% to 89%\n"}),
+                (("Update grade to zero", "g", "u", "CS145", "Quiz", "0"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 89% to 0%\n"}),
+                (("Show zero grade", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Grade for Quiz in CS145 is 0%%\n"}),
+                (("Grades above 100 percent are accepted", "g", "u", "CS145", "Quiz", "25/20"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 0% to 125%\n"}),
+                (("Show grade above 100 percent", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Grade for Quiz in CS145 is 125%%\n"}),
+                (("Score mode preserves the entered ratio", "g", "s", "-s", "CS145", "Quiz"),
+                 {"expected_stdout": "Grade for Quiz in CS145 is 25/20%\n"}),
+                (("A leading space before a number is accepted", "g", "u", "CS145", "Quiz", " 50"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 125% to 50%\n"}),
+                (("Scientific notation is accepted", "g", "u", "CS145", "Quiz", "1e2"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 50% to 100%\n"}),
+                (("Explicit plus sign is accepted", "g", "u", "CS145", "Quiz", "+5"),
+                 {"expected_stdout": "Grade for Quiz in CS145 updated from 100% to 5%\n"}),
+                (("Valid update is persisted and remains showable", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Grade for Quiz in CS145 is 0%%\n"}),
+
+                # Error paths in update: parsing happens before manager lookup.
+                (("Updating unknown course with valid grade reports course-not-found", "g", "u", "MISSING", "Quiz", "80"),
+                 {"error": True, "stderr_contains": ("Could not update grade", "Course MISSING does not exist")}),
+                (("Updating unknown assessment reports assessment-not-found", "g", "u", "CS145", "Unknown", "80"),
+                 {"error": True, "stderr_contains": ("Could not update grade", "Assessment Unknown does not exist")}),
+                (("Missing course wins over missing assessment on update", "g", "u", "MISSING", "Unknown", "80"),
+                 {"error": True, "stderr_contains": "Course MISSING does not exist",
+                  "stderr_not_contains": "Assessment Unknown does not exist"}),
+                (("Failed updates to missing entities leave existing grade unchanged", "g", "s", "CS145", "Quiz"),
+                 {"expected_stdout": "Grade for Quiz in CS145 is 0%%\n"}),
+
+                # Course-level current-grade behaviour, including current implementation quirks.
+                (("Create course with no assessments", "c", "a", "EMPTY"),
+                 {"stdout_contains": "Successfully added course EMPTY"}),
+                (("Current grade with no assessments returns invalid-current-grade", "g", "s", "EMPTY"),
+                 {"error": True, "stderr_contains": ("Could not show current grade in EMPTY", "Invalid current grade: 0/0")}),
+                (("Create course containing only ungraded assessments", "c", "a", "UNMARKED"),
+                 {"stdout_contains": "Successfully added course UNMARKED"}),
+                (("Add an ungraded-only assessment", "a", "a", "UNMARKED", "Homework", "50"),
+                 {"stdout_contains": "Successfully added assessment Homework"}),
+                (("Current grade with only ungraded assessments returns invalid-current-grade", "g", "s", "UNMARKED"),
+                 {"error": True, "stderr_contains": ("Could not show current grade in UNMARKED", "Invalid current grade: 0/0")}),
+                (("Create course for current-grade ratio test", "c", "a", "CURRENT"),
+                 {"stdout_contains": "Successfully added course CURRENT"}),
+                (("Add a 100-weight assessment graded at 80 percent", "a", "a", "CURRENT", "Exam", "100", "80"),
+                 {"stdout_contains": "Successfully added assessment Exam"}),
+                (("Default course current grade rounds the ratio rather than percent", "g", "s", "CURRENT"),
+                 {"expected_stdout": "Current grade in CURRENT is 1%\n"}),
+                (("Exact course current grade prints the raw ratio", "grade", "show", "--exact", "CURRENT"),
+                 {"expected_stdout": "Current grade in CURRENT is 0.8%\n"}),
+                (("Short exact flag does the same", "g", "s", "-e", "CURRENT"),
+                 {"expected_stdout": "Current grade in CURRENT is 0.8%\n"}),
+                (("Score flag is ignored for a course-level current grade", "g", "s", "-s", "CURRENT"),
+                 {"expected_stdout": "Current grade in CURRENT is 1%\n"}),
+                (("Create course for multi-assessment current-grade calculation", "c", "a", "WEIGHTED"),
+                 {"stdout_contains": "Successfully added course WEIGHTED"}),
+                (("Add first graded assessment to calculation test", "a", "a", "WEIGHTED", "A", "50", "80"),
+                 {"stdout_contains": "Successfully added assessment A"}),
+                (("Add second graded assessment to calculation test", "a", "a", "WEIGHTED", "B", "50", "60"),
+                 {"stdout_contains": "Successfully added assessment B"}),
+                (("Current grade reflects the current unweighted-sum implementation", "g", "s", "-e", "WEIGHTED"),
+                 {"expected_stdout": "Current grade in WEIGHTED is 1.4%\n"}),
+                (("Default rounding is applied to that raw ratio", "g", "s", "WEIGHTED"),
+                 {"expected_stdout": "Current grade in WEIGHTED is 1%\n"}),
+                (("Create course for partially marked weighting test", "c", "a", "PARTIAL"),
+                 {"stdout_contains": "Successfully added course PARTIAL"}),
+                (("Add graded half-weight assessment", "a", "a", "PARTIAL", "Marked", "50", "80"),
+                 {"stdout_contains": "Successfully added assessment Marked"}),
+                (("Add ungraded half-weight assessment", "a", "a", "PARTIAL", "NotMarked", "50"),
+                 {"stdout_contains": "Successfully added assessment NotMarked"}),
+                (("Ungraded weights are excluded from the denominator", "g", "s", "-e", "PARTIAL"),
+                 {"expected_stdout": "Current grade in PARTIAL is 1.6%\n"}),
+                (("Create course with a zero-weight graded assessment", "c", "a", "ZERO_WEIGHT"),
+                 {"stdout_contains": "Successfully added course ZERO_WEIGHT"}),
+                (("Add graded zero-weight assessment", "a", "a", "ZERO_WEIGHT", "Zero", "0", "80"),
+                 {"stdout_contains": "Successfully added assessment Zero"}),
+                (("Current grade with only zero assessed weight is invalid", "g", "s", "ZERO_WEIGHT"),
+                 {"error": True, "stderr_contains": ("Could not show current grade in ZERO_WEIGHT", "Invalid current grade: 0.8/0")}),
+                (("Current grade unknown course reports course-not-found", "g", "s", "MISSING"),
+                 {"error": True, "stderr_contains": ("Could not show current grade in MISSING", "Course MISSING does not exist")}),
+            ]
+        )
+
+        return test.summary()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
