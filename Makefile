@@ -24,7 +24,8 @@ cli: configure
 
 test:
 	@$(MAKE) --silent --no-print-directory release > /dev/null
-	@python3 tests/test_grades.py
+	@echo "Testing course subcommand"
+	@python3 tests/test_course.py
 
 install: release
 	sudo cmake --install build --config release
