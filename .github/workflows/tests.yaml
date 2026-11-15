@@ -27,4 +27,4 @@ jobs:
           sudo apt-get install -y cmake ninja-build build-essential
 
       - name: Build and run tests
-        run: make test
+        run: make test-verbose
