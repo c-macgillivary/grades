@@ -13,7 +13,7 @@ Result<Weight> Weight::create(double part, double total)
 
 Result<Weight> Weight::create(std::pair<double, double> ratio)
 {
-  if (ratio.first < 0 or ratio.second <= 0)
+  if (ratio.first < 0 or ratio.second <= 0 or ratio.first > ratio.second)
     return fail(ErrorCode::InvalidWeight, std::format("{}/{}", ratio.first, ratio.second));
 
   return Weight(ratio.first, ratio.second);
