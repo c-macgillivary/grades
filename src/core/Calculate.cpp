@@ -1,5 +1,6 @@
 #include "core/Calculate.hpp"
 #include "core/Grade.hpp"
+#include <iostream>
 
 namespace Calculate
 {
@@ -13,15 +14,18 @@ Result<OptionalGrade> currentGrade(const Course& course)
 
   for (auto [name, a] : assessments)
   {
+   // std::cout << "Adding " << name << " to grade" << std::endl;
     auto grade = a.getGrade();
     if (!grade)
       continue;
 
-    achievedScore += grade->ratio();
-
     Weight weight = a.getWeight();
 
     assessedWeight += weight.value();
+    achievedScore += grade->ratio() * weight.value();
+   // std::cout << "Grade for " << name << " is " << grade->ratio() << std::endl;
+    //std::cout << "Total achived score is " << achievedScore << std::endl;
+    //std::cout << "Total assessed weight is " << assessedWeight << std::endl;
   }
 
   auto current = Grade::create(achievedScore, assessedWeight);
