@@ -196,7 +196,6 @@ class TestRunner:
             return False
 
         self.passed += 1
-        print(f"\033[92mPASS\033[0m: {name}")
         return True
 
     def _record_failure(
@@ -410,8 +409,10 @@ class TestRunner:
 
     def summary(self) -> int:
         """Print totals and return number of failed tests."""
+        status = "\033[91mFAIL\033[0m" if self.failed else "\033[92mPASS\033[0m"
         total = self.passed + self.failed
-        print("\nTest summary:")
+
+        print(f"\nTest summary: {status}")
         print(f"  Passed: {self.passed}")
         print(f"  Failed: {self.failed}")
         print(f"  Total:  {total}")
