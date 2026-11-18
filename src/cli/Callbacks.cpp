@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "cli/ErrorHandling.hpp"
+#include "core/Error.hpp"
 #include "core/Grade.hpp"
 #include "core/Manager.hpp"
 #include "core/Utility.hpp"
@@ -131,8 +132,11 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
   auto weight = Weight::create(parseInput(weightInput));
 
   if (!weight)
-    // handleInvalidWeightError(weight);
-    return;
+  {
+    std::cerr << "Could not add assessment " << name << std::endl;
+    printErrorMessage(weight.error());
+    exit(1);
+  }
 
   OptionalGrade grade = std::nullopt;
 
@@ -207,7 +211,10 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     }
 
     if (*result == std::nullopt)
+    {
       std::cout << "Cannot calulate grade. No marks have been entered for " << code << std::endl;
+      return;
+    }
 
     double grade = (**result).ratio() * 100;
 
@@ -237,7 +244,7 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     else
       grade = gradeToPercent(**gradeResult);
 
-    std::cout << "Grade for " << name << " in " << code << " is " << grade << std::endl;;
+    std::cout << "Grade for " << name << " in " << code << " is " << grade << std::endl;
   }
 }
 

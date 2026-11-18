@@ -110,8 +110,7 @@ void registerCommands(CLI::App& app, Manager& manager)
   dump->callback([&]()
                  { dumpCallback(manager); });
 
+  // Register the command to appear in the help screen
+  // Even though it is handled before CLI parsing
   auto clean = app.add_subcommand("clean", "WARNING !!! REMOVES ALL STORED DATA !!! WARNING");
-  clean->require_subcommand(0);
-  clean->callback([&]()
-                  { cleanCallback(manager); });
 }
