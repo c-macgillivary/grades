@@ -216,12 +216,14 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
       return;
     }
 
-    double grade = (**result).ratio() * 100;
+    std::string grade;
 
-    if (not showExact)
-      grade = round(grade);
+    if (showScore)
+      grade = gradeToScore(**result);
+    else
+      grade = gradeToPercent(**result, showExact);
 
-    std::cout << "Current grade in " << code << " is " << grade << "%" << std::endl;
+    std::cout << "Current grade in " << code << " is " << grade << std::endl;
   }
   else
   {
