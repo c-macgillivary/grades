@@ -230,8 +230,11 @@ void showGradeCallback(Manager& manager, bool showScore, bool showExact, const s
     auto gradeResult = manager.getGrade(code, name);
 
     if (!gradeResult)
-      // handleShowAssessmentGradeError(gradeResult, code, name);
-      return;
+    {
+      std::cerr << "Could not show grade" << std::endl;
+      printErrorMessage(gradeResult.error());
+      exit(1);
+    }
 
     if (*gradeResult == std::nullopt)
     {
