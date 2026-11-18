@@ -84,7 +84,7 @@ def main() -> int:
                 (("Removing an empty code is a not-found error", "c", "r", ""),
                  {"error": True, "stderr_contains": "Course  does not exist"}),
                 (("Removing a whitespace-only code is a not-found error", "c", "r", "   "),
-                 {"error": True, "stderr_contains": "Course    does not exist"}),
+                 {"error": True, "stderr_contains": "Course     does not exist"}),
                 (("Failed removals do not change the course list", "c", "l"),
                  {"stdout_occurrences": {"MATH136\n": 1, "MATH136 \n": 1,
                                           "math136": 1, "CS-145/1": 1, "101": 1}}),
