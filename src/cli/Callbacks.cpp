@@ -145,8 +145,11 @@ void addAssessmentCallback(Manager& manager, const std::string& code, const std:
     auto gradeResult = Grade::create(parseInput(gradeInput));
 
     if (!gradeResult)
-      // handleInvalidGradeError(gradeResult);
-      return;
+    {
+      std::cerr << "Could not add assessment " << name << std::endl;
+      printErrorMessage(gradeResult.error());
+      exit(1);
+    }
 
     grade = *gradeResult;
   }
@@ -181,8 +184,11 @@ void updateGradeCallback(Manager& manager, const std::string& code, const std::s
   auto grade = Grade::create(parseInput(gradeInput));
 
   if (!grade)
-    // handleInvalidGradeError(grade);
-    return;
+  {
+    std::cerr << "Could not update grade for " << name << std::endl;
+    printErrorMessage(grade.error());
+    exit(1);
+  }
 
   auto oldGrade = manager.updateGrade(code, name, *grade);
   if (!oldGrade)
