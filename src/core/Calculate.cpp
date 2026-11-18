@@ -28,7 +28,7 @@ Result<OptionalGrade> currentGrade(const Course& course)
     //std::cout << "Total assessed weight is " << assessedWeight << std::endl;
   }
 
-  auto current = Grade::create(achievedScore, assessedWeight);
+  auto current = Grade::create(achievedScore * 100, assessedWeight * 100);
   if (!current)
     return fail(ErrorCode::InvalidCurrentGrade, std::format("{}/{}", achievedScore, assessedWeight));
 
