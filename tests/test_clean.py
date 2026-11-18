@@ -54,7 +54,7 @@ def main() -> int:
                 (("Dump is empty after clean", "dump"),
                  {"expected_stdout": "{}\n"}),
                 (("Assessment data was also deleted", "g", "s", "CS145", "Quiz"),
-                 {"expected_stdout": "", "expected_stderr": ""}),
+                 {"error": True, "expected_stdout": "", "expected_stderr": "Could not show grade\nError: Course CS145 does not exist\n"}),
                 (("Clean can be confirmed while already empty", "clean"),
                  {"input_text": "clean\n", "stdout_contains": (PROMPT, "Successfully deleted ALL stored data at ")}),
                 (("Empty database remains empty after second clean", "d"),
