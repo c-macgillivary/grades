@@ -17,6 +17,8 @@ private:
 public:
   Assessment(const std::string& name, const Weight& weight, const OptionalGrade& grade);
 
+  static bool isValidName(const std::string& code);
+
   const std::string& getName() const
   {
     return _name;

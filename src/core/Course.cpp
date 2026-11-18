@@ -1,10 +1,18 @@
 #include "core/Course.hpp"
 #include "core/Error.hpp"
 #include "core/Grade.hpp"
+#include "core/Utility.hpp"
 
 Course::Course(const std::string& code) :
   _code(code)
 {
+}
+
+bool Course::isValidCode(const std::string& code)
+{
+  if (isWhitespace(code))
+    return false;
+  return true;
 }
 
 Result<OptionalGrade> Course::getGrade(const std::string& name) const

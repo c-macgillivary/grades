@@ -14,6 +14,8 @@ private:
 public:
   explicit Course(const std::string& code);
 
+  static bool isValidCode(const std::string& code);
+
   const std::string& getCode() const
   {
     return _code;

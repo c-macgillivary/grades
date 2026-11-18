@@ -1,11 +1,19 @@
 #include "core/Assessment.hpp"
 #include "core/Grade.hpp"
+#include "core/Utility.hpp"
 
 Assessment::Assessment(const std::string& name, const Weight& weight, const OptionalGrade& grade) :
   _name(name),
   _weight(weight),
   _grade(grade)
 {
+}
+
+bool Assessment::isValidName(const std::string& code)
+{
+  if (isWhitespace(code))
+    return false;
+  return true;
 }
 
 OptionalGrade Assessment::setGrade(const Grade& grade)
