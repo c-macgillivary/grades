@@ -44,17 +44,28 @@ test-verbose:
 test:
 	@$(MAKE) --no-print-directory release > /tmp/grades-build.log 2>&1 || (cat /tmp/grades-build.log; exit 1)
 	@failed=0; \
+	passed=0; \
+	failed_suites=0; \
 	for script in $(TEST_SCRIPTS); do \
-		python3 "$$script" > /dev/null 2>&1; \
+		output=$$(python3 "$$script" 2>&1); \
 		result=$$?; \
-		failed=$$((failed + result)); \
+		summary=$$(printf '%s\n' "$$output" | sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g'); \
+		passed_count=$$(printf '%s\n' "$$summary" | sed -n 's/^[[:space:]]*Passed: \([0-9]*\).*/\1/p'); \
+		failed_count=$$(printf '%s\n' "$$summary" | sed -n 's/^[[:space:]]*Failed: \([0-9]*\).*/\1/p'); \
+		passed=$$((passed + $${passed_count:-0})); \
+		failed=$$((failed + $${failed_count:-0})); \
+		if [ $$result -ne 0 ]; then \
+			failed_suites=$$((failed_suites + 1)); \
+		fi; \
 	done; \
-	if [ $$failed -eq 0 ]; then \
+	if [ $$failed -eq 0 ] && [ $$failed_suites -eq 0 ]; then \
 		printf 'Test Summary: \033[32mPASS\033[0m\n'; \
 	else \
-		printf 'Test Summary: \033[31mFAIL\033[0m\nFailed tests: %d\n' $$failed; \
-		exit 1; \
-	fi
+		printf 'Test Summary: \033[31mFAIL\033[0m\n'; \
+	fi; \
+	printf 'Passed tests: %d\n' $$passed; \
+	printf 'Failed tests: %d\n' $$failed; \
+	exit $$((failed_suites > 0))
 
 install: release
 	sudo cmake --install build --config release
